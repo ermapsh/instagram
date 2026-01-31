@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
         marginVertical: 8,
     },
     text: {
-        fontSize: 16,
-        fontWeight: '600',
+        fontSize: 15,
+        fontWeight: '500',
     },
 });

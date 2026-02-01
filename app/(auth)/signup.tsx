@@ -1,7 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../components/ui/button';
+import { GlassDialog } from '../../components/ui/glass-dialog';
 import { Input } from '../../components/ui/input';
 import { useAppTheme } from '../../hooks/useTheme';
 
@@ -9,9 +10,11 @@ export default function SignupScreen() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const theme = useAppTheme();
+
     const [inputMode, setInputMode] = useState<'phone' | 'email'>('phone');
     const [mobileNumber, setMobileNumber] = useState('');
     const [email, setEmail] = useState('');
+    const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
     const selectedCountry = {
         name: (params.selectedCountryName as string) || 'India',
@@ -19,6 +22,14 @@ export default function SignupScreen() {
     };
 
     const isPhone = inputMode === 'phone';
+
+    const onChange = useCallback((text: string) => {
+        if (isPhone) {
+            setMobileNumber(text)
+        } else {
+            setEmail(text)
+        }
+    }, [isPhone])
 
     return (
         <ScrollView contentInsetAdjustmentBehavior="automatic" style={[styles.container, { backgroundColor: theme.color.background }]}>
@@ -54,9 +65,8 @@ export default function SignupScreen() {
                     keyboardType={isPhone ? "phone-pad" : "email-address"}
                     autoCapitalize="none"
                     value={isPhone ? mobileNumber : email}
-                    onChangeText={isPhone ? setMobileNumber : setEmail}
+                    onChangeText={onChange}
                     containerStyle={styles.inputContainer}
-                    autoFocus
                 />
 
                 {isPhone && (
@@ -97,6 +107,25 @@ export default function SignupScreen() {
                     </Text>
                 </TouchableOpacity>
             </View>
+
+            <GlassDialog
+                visible={true}
+                onClose={() => setShowLeaveConfirm(false)}
+                title="Do you want to stop creating your account?"
+                message="If you stop now, you'll lose any progress that you've made."
+                primaryAction={{
+                    label: "Stop creating account",
+                    onPress: () => {
+                        setShowLeaveConfirm(false);
+                        router.back();
+                    },
+                    variant: 'danger'
+                }}
+                secondaryAction={{
+                    label: "Continue creating account",
+                    onPress: () => setShowLeaveConfirm(false)
+                }}
+            />
         </ScrollView>
     );
 }

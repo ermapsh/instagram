@@ -29,7 +29,8 @@ export default function _layout() {
                     headerTransparent: true,
                     gestureEnabled: true,
                     headerLeft: () => <GoBack />
-                }} />
+                }}
+            />
             <Stack.Screen
                 name="country-select"
                 options={{

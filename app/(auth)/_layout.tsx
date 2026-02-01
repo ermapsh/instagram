@@ -3,6 +3,10 @@ import { useAppTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import React from 'react';
 
+export const unstable_settings = {
+    anchor: '(app)/home',
+};
+
 export default function _layout() {
     const theme = useAppTheme();
     return (
@@ -46,6 +50,12 @@ export default function _layout() {
                     },
                     headerTransparent: true,
                     headerLeft: () => <GoBack icon="close" />
+                }}
+            />
+            <Stack.Screen
+                name="(app)"
+                options={{
+                    headerShown: false
                 }}
             />
         </Stack>

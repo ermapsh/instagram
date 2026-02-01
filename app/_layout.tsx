@@ -3,17 +3,15 @@ import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { useAppTheme } from '@/hooks/useTheme';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import RNPaperProvider from '../provider/RNPaperProvider';
 
 export const unstable_settings = {
-  anchor: 'index',
+  anchor: '/(auth)/(app)/home',
 };
 
 export default function RootLayout() {
-  const theme = useAppTheme();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setTimeout(() => {

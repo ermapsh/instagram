@@ -18,6 +18,8 @@ function Login() {
         // Simulate login delay
         setTimeout(() => {
             setIsLoading(false);
+            // router.dismissAll();
+            router.push('/(auth)/(app)/home');
             // Navigate or handle success
         }, 2000);
     };
@@ -56,7 +58,7 @@ function Login() {
                     variant="primary"
                     onPress={handleLogin}
                     loading={isLoading}
-                    disabled={!username || !password}
+                // disabled={!username || !password}
                 />
 
                 <TouchableOpacity style={{ marginTop: 12 }}>

@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { memo, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useAppTheme } from '../../hooks/useTheme';
@@ -23,7 +23,8 @@ function Login() {
     };
 
     return (
-        <View
+        <ScrollView
+            contentInsetAdjustmentBehavior="automatic"
             style={[
                 styles.container,
                 { backgroundColor: theme.color.background },
@@ -72,7 +73,7 @@ function Login() {
                     onPress={() => router.push('/(auth)/signup')}
                 />
             </View>
-        </View>
+        </ScrollView>
     );
 }
 

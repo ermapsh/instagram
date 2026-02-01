@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 import { useAppTheme } from '../../hooks/useTheme';
@@ -13,7 +13,6 @@ export default function SignupScreen() {
     const [mobileNumber, setMobileNumber] = useState('');
     const [email, setEmail] = useState('');
 
-    // Default to India if not specified in params
     const selectedCountry = {
         name: (params.selectedCountryName as string) || 'India',
         code: (params.selectedCountryCode as string) || '+91'
@@ -22,22 +21,20 @@ export default function SignupScreen() {
     const isPhone = inputMode === 'phone';
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.color.background }]}>
-
-
-            {/* Main Content */}
+        <ScrollView contentInsetAdjustmentBehavior="automatic" style={[styles.container, { backgroundColor: theme.color.background }]}>
             <View style={styles.content}>
-                <Text style={[styles.title, { color: theme.color.text }]}>
-                    {isPhone ? "What's your mobile number?" : "What's your email address?"}
-                </Text>
+                <View>
+                    <Text style={[styles.title, { color: theme.color.text }]}>
+                        {isPhone ? "What's your mobile number?" : "What's your email address?"}
+                    </Text>
 
-                <Text style={[styles.subtitle, { color: theme.color.textSecondary }]}>
-                    {isPhone
-                        ? "Enter the mobile number on which you can be contacted. No one will see this on your profile."
-                        : "Enter the email address at which you can be contacted. No one will see this on your profile."}
-                </Text>
+                    <Text style={[styles.subtitle, { color: theme.color.textSecondary }]}>
+                        {isPhone
+                            ? "Enter the mobile number on which you can be contacted. No one will see this on your profile."
+                            : "Enter the email address at which you can be contacted. No one will see this on your profile."}
+                    </Text>
+                </View>
 
-                {/* Country Selector Mock - Only for Phone */}
                 {isPhone && (
                     <View style={styles.countrySelector}>
                         <Text style={[styles.countryText, { color: theme.color.text }]}>
@@ -52,7 +49,6 @@ export default function SignupScreen() {
                     </View>
                 )}
 
-                {/* Input */}
                 <Input
                     placeholder={isPhone ? "Mobile number" : "Email address"}
                     keyboardType={isPhone ? "phone-pad" : "email-address"}
@@ -69,7 +65,6 @@ export default function SignupScreen() {
                     </Text>
                 )}
 
-                {/* Actions */}
                 <View style={styles.buttonGroup}>
                     <Button
                         title="Next"
@@ -95,7 +90,6 @@ export default function SignupScreen() {
                 </View>
             </View>
 
-            {/* Footer */}
             <View style={styles.footer}>
                 <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
                     <Text style={[styles.footerText, { color: theme.color.brand }]}>
@@ -103,21 +97,14 @@ export default function SignupScreen() {
                     </Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 1,
-    },
     container: {
-        flexGrow: 1,
+        flex: 1,
         padding: 24,
-    },
-    backButton: {
-        marginBottom: 12,
-        marginLeft: -8, // Align nicely with left edge
     },
     content: {
         flex: 1,

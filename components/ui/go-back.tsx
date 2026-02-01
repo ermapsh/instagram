@@ -1,15 +1,19 @@
+import { os } from '@/constant/os';
 import { useAppTheme } from '@/hooks/useTheme';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { memo } from 'react';
 import { TouchableOpacity } from 'react-native';
+import { Icon } from 'react-native-paper';
 
-function GoBack() {
+type GoBackProps = {
+    icon?: any;
+}
+function GoBack({ icon = os === "ios" ? "chevron-left" : "arrow-left" }: GoBackProps) {
     const router = useRouter();
     const theme = useAppTheme();
     return (
         <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="close" size={35} color={theme.color.text} />
+            <Icon source={icon} size={35} color={theme.color.text} />
         </TouchableOpacity>
     )
 }

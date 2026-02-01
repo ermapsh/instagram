@@ -33,16 +33,12 @@ export default function RootLayout() {
       <StatusBar style="auto" />
       <RNPaperProvider>
         <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{
-            headerShown: true,
-            headerTitle: "",
-            headerBackButtonDisplayMode: "minimal",
-            headerStyle: {
-              backgroundColor: theme.color.background,
-            },
-            headerTransparent: true,
-          }} />
+          <Stack.Screen name="index"
+            options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)"
+            options={{
+              headerShown: false
+            }} />
         </Stack>
       </RNPaperProvider>
     </SafeAreaProvider>

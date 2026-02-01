@@ -8,11 +8,28 @@ export default function _layout() {
     return (
         <Stack>
             <Stack.Screen name="login"
-                options={{ headerShown: false }}
+                options={{
+                    headerShown: true,
+                    headerTitle: "",
+                    headerStyle: {
+                        backgroundColor: theme.color.background,
+                    },
+                    headerTransparent: true,
+                    gestureEnabled: true,
+                    headerLeft: () => <GoBack />
+                }}
             />
-            <Stack.Screen name="signup" options={{
-                headerShown: false,
-            }} />
+            <Stack.Screen name="signup"
+                options={{
+                    headerShown: true,
+                    headerTitle: "",
+                    headerStyle: {
+                        backgroundColor: theme.color.background,
+                    },
+                    headerTransparent: true,
+                    gestureEnabled: true,
+                    headerLeft: () => <GoBack />
+                }} />
             <Stack.Screen
                 name="country-select"
                 options={{
@@ -27,7 +44,7 @@ export default function _layout() {
                         color: theme.color.text
                     },
                     headerTransparent: true,
-                    headerLeft: () => <GoBack />
+                    headerLeft: () => <GoBack icon="close" />
                 }}
             />
         </Stack>

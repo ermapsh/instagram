@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { Slot } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -9,7 +9,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import RNPaperProvider from '../provider/RNPaperProvider';
 
 export const unstable_settings = {
-  anchor: '/(auth)/(app)/home',
+  anchor: '(auth)/(app)/home',
 };
 
 export default function RootLayout() {
@@ -28,18 +28,19 @@ export default function RootLayout() {
     )
   }
   return (
-    <GestureHandlerRootView>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <StatusBar style="auto" />
         <RNPaperProvider>
-          <Stack>
+          {/* <Stack>
             <Stack.Screen name="index"
               options={{ headerShown: false }} />
             <Stack.Screen name="(auth)"
               options={{
                 headerShown: false
               }} />
-          </Stack>
+          </Stack> */}
+          <Slot screenOptions={{ headerShown: false }} />
         </RNPaperProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

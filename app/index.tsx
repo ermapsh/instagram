@@ -1,6 +1,15 @@
+import { Redirect } from "expo-router";
+import React from "react";
+
+export default function Index() {
+    return <Redirect href="/(auth)/(app)/home" />;
+}
+
+/* 
+Original Join Screen Content (Commented out):
+
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../components/ui/button";
@@ -17,7 +26,6 @@ export default function Index() {
                 { backgroundColor: theme.color.background },
             ]}
         >
-            {/* content */}
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Image
                     source={require("../assets/images/join-screen/join.png")}
@@ -43,10 +51,11 @@ export default function Index() {
     );
 }
 
-export const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'space-between',
         padding: 16,
     },
 });
+*/

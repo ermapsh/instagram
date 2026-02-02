@@ -1,7 +1,6 @@
 import { useAppTheme } from '@/hooks/useTheme';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import PagerView from 'react-native-pager-view';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CustomTabBar } from '../../../components/navigation/tab-bar';
 import HomeScreen from './home';
@@ -25,30 +24,21 @@ const ROUTES = [
 export default function AppLayout() {
     const theme = useAppTheme();
     const [activeIndex, setActiveIndex] = useState(0);
-    const pagerRef = useRef<PagerView>(null);
     const insets = useSafeAreaInsets();
 
     const handleTabPress = (index: number) => {
-        pagerRef.current?.setPage(index);
         setActiveIndex(index);
     };
 
+    const ActiveComponent = ROUTES[activeIndex].component;
+
     return (
         <View style={[styles.container, { backgroundColor: theme.color.background }]}>
-            <PagerView
-                ref={pagerRef}
-                style={[styles.pagerView, { backgroundColor: theme.colorBlack }]}
-                initialPage={0}
-                onPageSelected={(e) => setActiveIndex(e.nativeEvent.position)}
-            >
-                {ROUTES.map((route) => (
-                    <View key={route.name} style={[styles.page, { backgroundColor: theme.color.background }]}>
-                        <route.component />
-                    </View>
-                ))}
-            </PagerView>
+            <View style={styles.content}>
+                <ActiveComponent />
+            </View>
 
-            {/* Custom Tab Bar synced with PagerView */}
+            {/* Custom Tab Bar */}
             <CustomTabBar
                 insets={insets}
                 state={{
@@ -75,10 +65,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    pagerView: {
+    content: {
         flex: 1,
     },
-    page: {
-        flex: 1,
-    }
 });

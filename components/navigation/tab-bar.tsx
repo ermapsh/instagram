@@ -1,14 +1,97 @@
+import { os } from '@/constant/os';
 import { Ionicons } from '@expo/vector-icons';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Avatar, Icon } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useTheme';
 
-export const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+interface TabBarIconProps {
+    routeName: string;
+    isFocused: boolean;
+    theme: any;
+}
+
+const TabBarIcon = ({ routeName, isFocused, theme }: TabBarIconProps) => {
+    const iconColor = theme.color.text;
+    const iconSize = isFocused ? 26 : 24;
+
+    // Custom PNG icons for Home, Reel, Message, and Search
+    if (routeName === 'home') {
+        return (
+            <Icon
+                color={iconColor}
+                size={iconSize}
+                source={isFocused
+                    ? require('@/assets/icons/home.png')
+                    : require('@/assets/icons/home-outline.png')
+                }
+            />
+        );
+    }
+
+    if (routeName === 'reel') {
+        return (
+            <Icon
+                color={iconColor}
+                size={iconSize}
+                source={isFocused
+                    ? require('@/assets/icons/reel.png')
+                    : require('@/assets/icons/reel-outline.png')
+                }
+            />
+        );
+    }
+
+    if (routeName === 'message') {
+        return (
+            <Icon
+                color={iconColor}
+                size={iconSize}
+                source={isFocused
+                    ? require('@/assets/icons/message.png')
+                    : require('@/assets/icons/message-outline.png')
+                }
+            />
+        );
+    }
+
+    if (routeName === 'search') {
+        return (
+            <Icon
+                color={iconColor}
+                size={iconSize}
+                source={isFocused
+                    ? require('@/assets/icons/search.png')
+                    : require('@/assets/icons/search-outline.png')
+                }
+            />
+        );
+    }
+
+    if (routeName === 'profile') {
+        const avatarSize = isFocused ? 26 : 24;
+        const containerSize = isFocused ? 32 : 30;
+        return (
+            <View style={[
+                styles.avatarContainer,
+                { width: containerSize, height: containerSize, borderRadius: containerSize / 2 },
+                isFocused && { borderColor: theme.color.text, borderWidth: 1.5 }
+            ]}>
+                <Avatar.Image
+                    size={avatarSize}
+                    source={{ uri: 'https://i.pravatar.cc/100' }}
+                    style={{ backgroundColor: 'transparent' }}
+                />
+            </View>
+        );
+    }
+
+    return <Ionicons name="square" size={iconSize} color={iconColor} />;
+};
+
+export const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation, insets }) => {
     const theme = useAppTheme();
-    const insets = useSafeAreaInsets();
 
     return (
         <View style={[
@@ -16,7 +99,7 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
             {
                 backgroundColor: theme.color.background,
                 borderTopColor: theme.color.border,
-                paddingBottom: Platform.OS === 'ios' ? insets.bottom : 12,
+                paddingBottom: os === 'ios' ? insets.bottom : 12,
             }
         ]}>
             <View style={styles.content}>
@@ -43,84 +126,6 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
                         });
                     };
 
-                    const renderIcon = () => {
-                        const iconColor = isFocused ? theme.color.text : theme.color.textSecondary;
-                        const iconSize = isFocused ? 26 : 24;
-
-                        // Custom PNG icons for Home, Reel, Message, and Search
-                        if (route.name === 'home') {
-                            return (
-                                <Icon
-                                    color={iconColor}
-                                    size={iconSize}
-                                    source={isFocused
-                                        ? require('@/assets/icons/home.png')
-                                        : require('@/assets/icons/home-outline.png')
-                                    }
-                                />
-                            );
-                        }
-
-                        if (route.name === 'reel') {
-                            return (
-                                <Icon
-                                    color={iconColor}
-                                    size={iconSize}
-                                    source={isFocused
-                                        ? require('@/assets/icons/reel.png')
-                                        : require('@/assets/icons/reel-outline.png')
-                                    }
-                                />
-                            );
-                        }
-
-                        if (route.name === 'message') {
-                            return (
-                                <Icon
-                                    color={iconColor}
-                                    size={iconSize}
-                                    source={isFocused
-                                        ? require('@/assets/icons/message.png')
-                                        : require('@/assets/icons/message-outline.png')
-                                    }
-                                />
-                            );
-                        }
-
-                        if (route.name === 'search') {
-                            return (
-                                <Icon
-                                    color={iconColor}
-                                    size={iconSize}
-                                    source={isFocused
-                                        ? require('@/assets/icons/search.png')
-                                        : require('@/assets/icons/search-outline.png')
-                                    }
-                                />
-                            );
-                        }
-
-                        if (route.name === 'profile') {
-                            const avatarSize = isFocused ? 26 : 24;
-                            const containerSize = isFocused ? 32 : 30;
-                            return (
-                                <View style={[
-                                    styles.avatarContainer,
-                                    { width: containerSize, height: containerSize, borderRadius: containerSize / 2 },
-                                    isFocused && { borderColor: theme.color.text, borderWidth: 1.5 }
-                                ]}>
-                                    <Avatar.Image
-                                        size={avatarSize}
-                                        source={{ uri: 'https://i.pravatar.cc/100' }}
-                                        style={{ backgroundColor: 'transparent' }}
-                                    />
-                                </View>
-                            );
-                        }
-
-                        return <Ionicons name="square" size={iconSize} color={iconColor} />;
-                    };
-
                     return (
                         <TouchableOpacity
                             key={route.key}
@@ -132,7 +137,11 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
                             style={styles.tabItem}
                             activeOpacity={0.7}
                         >
-                            {renderIcon()}
+                            <TabBarIcon
+                                routeName={route.name}
+                                isFocused={isFocused}
+                                theme={theme}
+                            />
                         </TouchableOpacity>
                     );
                 })}

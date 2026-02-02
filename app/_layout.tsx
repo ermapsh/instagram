@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import RNPaperProvider from '../provider/RNPaperProvider';
 
 export const unstable_settings = {
@@ -27,18 +28,20 @@ export default function RootLayout() {
     )
   }
   return (
-    <SafeAreaProvider>
-      <StatusBar style="auto" />
-      <RNPaperProvider>
-        <Stack>
-          <Stack.Screen name="index"
-            options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)"
-            options={{
-              headerShown: false
-            }} />
-        </Stack>
-      </RNPaperProvider>
-    </SafeAreaProvider>
+    <GestureHandlerRootView>
+      <SafeAreaProvider>
+        <StatusBar style="auto" />
+        <RNPaperProvider>
+          <Stack>
+            <Stack.Screen name="index"
+              options={{ headerShown: false }} />
+            <Stack.Screen name="(auth)"
+              options={{
+                headerShown: false
+              }} />
+          </Stack>
+        </RNPaperProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

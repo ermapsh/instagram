@@ -16,12 +16,12 @@ function Login() {
     const handleLogin = async () => {
         setIsLoading(true);
         // Simulate login delay
-        setTimeout(() => {
-            setIsLoading(false);
-            // router.dismissAll();
-            router.push('/(auth)/(app)/home');
-            // Navigate or handle success
-        }, 2000);
+        // setTimeout(() => {
+        setIsLoading(false);
+        // router.dismissAll();
+        router.push('/(auth)/(app)/home');
+        // Navigate or handle success
+        // }, 2000);
     };
 
     return (
@@ -35,7 +35,8 @@ function Login() {
             <View style={styles.content}>
                 <Image
                     source={require("@/assets/images/join-screen/insta.png")}
-                    style={{ width: 75, height: 75, resizeMode: 'contain', marginBottom: 40 }}
+                    style={{ width: 75, height: 75, marginBottom: 40 }}
+                    contentFit="cover"
                 />
 
                 <View style={styles.inputContainer}>

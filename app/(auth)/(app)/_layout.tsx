@@ -1,3 +1,4 @@
+import { useAppTheme } from '@/hooks/useTheme';
 import React, { useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
@@ -22,6 +23,7 @@ const ROUTES = [
 ];
 
 export default function AppLayout() {
+    const theme = useAppTheme();
     const [activeIndex, setActiveIndex] = useState(0);
     const pagerRef = useRef<PagerView>(null);
     const insets = useSafeAreaInsets();
@@ -32,15 +34,15 @@ export default function AppLayout() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: theme.color.background }]}>
             <PagerView
                 ref={pagerRef}
-                style={styles.pagerView}
+                style={[styles.pagerView, { backgroundColor: theme.colorBlack }]}
                 initialPage={0}
                 onPageSelected={(e) => setActiveIndex(e.nativeEvent.position)}
             >
                 {ROUTES.map((route) => (
-                    <View key={route.name} style={styles.page}>
+                    <View key={route.name} style={[styles.page, { backgroundColor: theme.color.background }]}>
                         <route.component />
                     </View>
                 ))}

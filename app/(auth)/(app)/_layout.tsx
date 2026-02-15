@@ -78,7 +78,7 @@ export default function AppLayout() {
                         const getIconSource = (name: string, focused: boolean) => {
                             const icons: any = {
                                 home: [require('@/assets/icons/home.png'), require('@/assets/icons/home-outline.png')],
-                                reel: [require('@/assets/icons/reel.png'), require('@/assets/icons/reel-outline.png')],
+                                reels: [require('@/assets/icons/reel.png'), require('@/assets/icons/reel-outline.png')],
                                 message: [require('@/assets/icons/message.png'), require('@/assets/icons/message-outline.png')],
                                 search: [require('@/assets/icons/search.png'), require('@/assets/icons/search-outline.png')],
                             };
@@ -137,7 +137,7 @@ export default function AppLayout() {
             }}
         >
             <MaterialTopTabs.Screen name="home" options={{ title: 'Home' }} />
-            <MaterialTopTabs.Screen name="reel" options={{ title: 'Reel' }} />
+            <MaterialTopTabs.Screen name="reels" options={{ title: 'Reel' }} />
             <MaterialTopTabs.Screen name="message" options={{ title: 'Message' }} />
             <MaterialTopTabs.Screen name="search" options={{ title: 'Search' }} />
             <MaterialTopTabs.Screen name="profile" options={{ title: 'Profile' }} />

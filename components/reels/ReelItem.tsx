@@ -1,8 +1,11 @@
 import { useAppTheme } from '@/hooks/useTheme';
 import { Image } from 'expo-image';
-import React, { useState } from 'react';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-paper';
+import { runOnJS } from 'react-native-reanimated';
 // Added withTiming here
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { MarqueeText } from '../common/MarqueeText';
@@ -21,6 +24,9 @@ interface ReelItemProps {
     comments: number;
     shares: number;
     isFollowing?: boolean;
+    height: number;
+    isVisible?: boolean;
+    isActive?: boolean;
 }
 
 export const ReelItem = ({
@@ -32,13 +38,99 @@ export const ReelItem = ({
     comments,
     shares,
     isFollowing = false,
+    height,
+    isVisible = false,
+    isActive = false,
 }: ReelItemProps) => {
     const theme = useAppTheme();
+    const [progress, setProgress] = useState(0);
     const [isReposted, setIsReposted] = useState(false);
+
+    const [isPlaying, setIsPlaying] = useState(true);
+    const [isFastForwarding, setIsFastForwarding] = useState(false);
+
+    const player = useVideoPlayer(videoUrl, (player) => {
+        player.loop = true;
+        if (isVisible) {
+            player.play();
+        }
+    });
+
+    const setPlaybackSpeed = (speed: number) => {
+        player.playbackRate = speed;
+        setIsFastForwarding(speed > 1);
+    };
+
+    const togglePlay = () => {
+        setIsPlaying((prev) => !prev);
+    };
+
+    const tapGesture = Gesture.Tap()
+        .onEnd(() => {
+            runOnJS(togglePlay)();
+        });
+
+    const longPressGesture = Gesture.LongPress()
+        .minDuration(300)
+        .onStart((e) => {
+            const { x } = e;
+            // Right 40% (x > 0.6) or Left 10% (x < 0.1)
+            if (x > SCREEN_WIDTH * 0.6 || x < SCREEN_WIDTH * 0.1) {
+                runOnJS(setPlaybackSpeed)(2.0);
+            }
+        })
+        .onFinalize(() => {
+            runOnJS(setPlaybackSpeed)(1.0);
+        });
+
+    const composedGestures = Gesture.Race(longPressGesture, tapGesture);
+
+    useEffect(() => {
+        if (isVisible && isPlaying) {
+            player.play();
+        } else {
+            player.pause();
+        }
+        return () => {
+            player.pause();
+        };
+    }, [isVisible, isPlaying, player]);
+
+    useEffect(() => {
+        if (!isActive) {
+            setProgress(0);
+            setIsPlaying(true);
+        }
+    }, [isActive]);
+
+    // Animate progress bar (simulates video progress)
+    useEffect(() => {
+        if (!isVisible) {
+            return;
+        }
+
+        if (!isPlaying) return;
+
+        const interval = setInterval(() => {
+            setProgress((prev) => (prev >= 100 ? 0 : prev + 0.5));
+        }, 50);
+        return () => clearInterval(interval);
+    }, [isVisible, isPlaying]);
+
+
 
     // Animation values for repost button
     const rotation = useSharedValue(0);
     const scale = useSharedValue(1);
+    const playIconScale = useSharedValue(0);
+
+    useEffect(() => {
+        if (!isPlaying) {
+            playIconScale.value = withTiming(1, { duration: 200 });
+        } else {
+            playIconScale.value = withTiming(0, { duration: 200 });
+        }
+    }, [isPlaying]);
 
     const formatCount = (count: number): string => {
         if (count >= 1000000) {
@@ -72,20 +164,53 @@ export const ReelItem = ({
         };
     });
 
+    const playIconAnimatedStyle = useAnimatedStyle(() => {
+        return {
+            transform: [{ scale: playIconScale.value }],
+            opacity: playIconScale.value,
+        };
+    });
+
     return (
-        <View style={styles.container}>
-            {/* Video Thumbnail/Player */}
-            <Image
-                source={{ uri: videoUrl }}
-                style={styles.video}
-                contentFit="cover"
-            />
+        <View style={[styles.container, { height }]}>
+            {/* Video Player & Gestures */}
+            <GestureDetector gesture={composedGestures}>
+                <View style={StyleSheet.absoluteFill}>
+                    <VideoView
+                        style={styles.video}
+                        player={player}
+                        contentFit="cover"
+                        nativeControls={false}
+                    />
+
+                    {/* Fast Forward Indicator */}
+                    {isFastForwarding && (
+                        <View style={styles.speedIndicator}>
+                            <Text style={styles.speedText}>2x Speed</Text>
+                            <Icon source="fast-forward" size={20} color="#fff" />
+                        </View>
+                    )}
+
+                    <View style={styles.playIconContainer}>
+                        <Animated.View style={[styles.playIconInner, playIconAnimatedStyle]}>
+                            <Icon source={require("@/assets/icons/resume.png")} size={30} color="rgba(255, 255, 255, 0.6)" />
+                        </Animated.View>
+                    </View>
+                </View>
+            </GestureDetector>
+
+            {/* Progress Bar - Bottom */}
+            <View style={styles.progressContainer}>
+                <View style={styles.progressBackground}>
+                    <View style={[styles.progressFill, { width: `${progress}%` }]} />
+                </View>
+            </View>
 
             {/* Right Side Actions */}
 
 
             {/* Bottom User Info Section */}
-            <View style={styles.overlayContainer}>
+            <View style={[styles.overlayContainer, { bottom: 20 }]}>
                 <View style={{ flex: 1, justifyContent: 'flex-end' }}>
                     <View style={styles.userHeader}>
                         <StoryItem
@@ -176,6 +301,28 @@ const styles = StyleSheet.create({
     video: {
         width: '100%',
         height: '100%',
+    },
+    playIconContainer: {
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 5,
+    },
+
+    progressContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 20,
+    },
+    progressBackground: {
+        height: 2,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    },
+    progressFill: {
+        height: '100%',
+        backgroundColor: '#fff',
     },
     overlay: {
         ...StyleSheet.absoluteFillObject,
@@ -291,5 +438,28 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         borderWidth: 1,
         borderColor: '#fff',
+    },
+    playIconInner: {
+        backgroundColor: 'rgba(0, 0, 0, 0.2)',
+        padding: 15,
+        borderRadius: 50,
+    },
+    speedIndicator: {
+        position: 'relative',
+        bottom: 150,
+        alignSelf: 'center',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        zIndex: 10,
+    },
+    speedText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 14,
     },
 });

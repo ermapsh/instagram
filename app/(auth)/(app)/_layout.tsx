@@ -100,7 +100,7 @@ export default function AppLayout() {
                                 style={styles.tabItem}
                                 activeOpacity={1}
                             >
-                                <Animated.View style={{ transform: [{ scale }], opacity }}>
+                                <Animated.View style={{ transform: [{ scale }] }}>
                                     {routeName === 'profile' ? (
                                         <Animated.View style={[
                                             styles.avatarContainer,
@@ -108,8 +108,10 @@ export default function AppLayout() {
                                         ]}>
                                             <Avatar.Image
                                                 size={26}
-                                                source={{ uri: 'https://i.pravatar.cc/100' }}
-                                                style={{ backgroundColor: 'transparent' }}
+                                                // source={{ uri: 'https://i.pravatar.cc/100' }}
+                                                source={{ uri: 'https://avatars.githubusercontent.com/u/72149385?v=4' }}
+                                            // source={{ uri: 'https://media.licdn.com/dms/image/v2/D4D03AQF0QwlPlbicPg/profile-displayphoto-shrink_400_400/B4DZZ2D0YcHIAg-/0/1745737435477?e=1772668800&v=beta&t=7VnxKly120J58F4OdpfvW0SfY_jUIQRoPHLik6Z9_P0' }}
+                                            // style={{ backgroundColor: 'transparent' }}
                                             />
                                         </Animated.View>
                                     ) : iconSource ? (
@@ -131,7 +133,7 @@ export default function AppLayout() {
             tabBarPosition="bottom"
             tabBar={renderTabBar}
             screenOptions={{
-                swipeEnabled: true,
+                swipeEnabled: false,
                 animationEnabled: true,
                 tabBarIndicatorStyle: { height: 0 },
             }}

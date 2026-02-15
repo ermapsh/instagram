@@ -48,6 +48,9 @@ export const ReelItem = ({
 
     const [isPlaying, setIsPlaying] = useState(true);
     const [isFastForwarding, setIsFastForwarding] = useState(false);
+    const [duration, setDuration] = useState(0);
+    const [isScrubbing, setIsScrubbing] = useState(false);
+    const [barWidth, setBarWidth] = useState(0);
 
     const player = useVideoPlayer(videoUrl, (player) => {
         player.loop = true;
@@ -61,8 +64,35 @@ export const ReelItem = ({
         setIsFastForwarding(speed > 1);
     };
 
+    const handleScrub = (x: number) => {
+        if (barWidth <= 0 || !duration) return;
+
+        const usefulWidth = barWidth;
+        const relativeX = x;
+
+        let percent = relativeX / usefulWidth;
+        percent = Math.max(0, Math.min(1, percent));
+
+        setProgress(percent * 100);
+        player.currentTime = percent * duration;
+    };
+
+    const scrubGesture = Gesture.Pan()
+        .minDistance(0)
+        .onStart((e) => {
+            runOnJS(setIsScrubbing)(true);
+            runOnJS(handleScrub)(e.x);
+        })
+        .onUpdate((e) => {
+            runOnJS(handleScrub)(e.x);
+        })
+        .onEnd(() => {
+            runOnJS(setIsScrubbing)(false);
+            // scheduleOnRN(setIsScrubbing)(false);
+        });
+
     const togglePlay = () => {
-        setIsPlaying((prev) => !prev);
+        setIsPlaying(!isPlaying);
     };
 
     const tapGesture = Gesture.Tap()
@@ -103,19 +133,24 @@ export const ReelItem = ({
         }
     }, [isActive]);
 
-    // Animate progress bar (simulates video progress)
+    // Sync progress with real video time
     useEffect(() => {
-        if (!isVisible) {
-            return;
-        }
-
-        if (!isPlaying) return;
+        if (!isVisible || isScrubbing) return;
 
         const interval = setInterval(() => {
-            setProgress((prev) => (prev >= 100 ? 0 : prev + 0.5));
-        }, 50);
+            if (player) {
+                const current = player.currentTime;
+                const total = player.duration;
+
+                if (total > 0) {
+                    setProgress((current / total) * 100);
+                    setDuration(total);
+                }
+            }
+        }, 100);
+
         return () => clearInterval(interval);
-    }, [isVisible, isPlaying]);
+    }, [isVisible, isScrubbing, player]);
 
 
 
@@ -123,14 +158,20 @@ export const ReelItem = ({
     const rotation = useSharedValue(0);
     const scale = useSharedValue(1);
     const playIconScale = useSharedValue(0);
+    const progressBarHeight = useSharedValue(2);
 
     useEffect(() => {
         if (!isPlaying) {
-            playIconScale.value = withTiming(1, { duration: 200 });
+            playIconScale.value = withSpring(1, { damping: 10, stiffness: 200 });
         } else {
             playIconScale.value = withTiming(0, { duration: 200 });
         }
     }, [isPlaying]);
+
+    useEffect(() => {
+        const targetHeight = isScrubbing ? 10 : 3; // Expand only while scrubbing
+        progressBarHeight.value = withTiming(targetHeight, { duration: 200 });
+    }, [isScrubbing]);
 
     const formatCount = (count: number): string => {
         if (count >= 1000000) {
@@ -139,6 +180,12 @@ export const ReelItem = ({
             return `${(count / 1000).toFixed(1)}K`;
         }
         return count.toString();
+    };
+
+    const formatTime = (seconds: number): string => {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
     const handleRepost = () => {
@@ -171,6 +218,13 @@ export const ReelItem = ({
         };
     });
 
+    const progressBarStyle = useAnimatedStyle(() => {
+        return {
+            height: progressBarHeight.value,
+            borderRadius: 5, // Round corners when expanded
+        };
+    });
+
     return (
         <View style={[styles.container, { height }]}>
             {/* Video Player & Gestures */}
@@ -200,11 +254,16 @@ export const ReelItem = ({
             </GestureDetector>
 
             {/* Progress Bar - Bottom */}
-            <View style={styles.progressContainer}>
-                <View style={styles.progressBackground}>
-                    <View style={[styles.progressFill, { width: `${progress}%` }]} />
+            <GestureDetector gesture={scrubGesture}>
+                <View
+                    style={styles.progressContainer}
+                    onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
+                >
+                    <Animated.View style={[styles.progressBackground, progressBarStyle]}>
+                        <View style={[styles.progressFill, { width: `${progress}%` }]} />
+                    </Animated.View>
                 </View>
-            </View>
+            </GestureDetector>
 
             {/* Right Side Actions */}
 
@@ -315,6 +374,8 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 20,
+        height: 20,
+        justifyContent: 'flex-end',
     },
     progressBackground: {
         height: 2,
@@ -461,5 +522,21 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: '600',
         fontSize: 14,
+    },
+    progressContainerPaused: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
+        paddingBottom: 20,
+        backgroundColor: 'rgba(0,0,0,0.3)',
+        height: 60,
+    },
+    timeText: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: '600',
+        minWidth: 35,
+        textAlign: 'center',
     },
 });

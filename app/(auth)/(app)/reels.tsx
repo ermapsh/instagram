@@ -2,8 +2,9 @@ import { ReelItem } from '@/components/reels/ReelItem';
 import { useAppTheme } from '@/hooks/useTheme';
 import { useIsFocused } from '@react-navigation/native';
 import React, { useRef } from 'react';
-import { Dimensions, FlatList, StyleSheet, View, ViewToken } from 'react-native';
+import { Dimensions, FlatList, Platform, StyleSheet, View, ViewToken } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -50,8 +51,8 @@ export default function ReelScreen() {
     const isFocused = useIsFocused();
     const [visibleItemIndex, setVisibleItemIndex] = React.useState(0);
 
-    // Calculate tab bar height (52px + bottom inset)
-    const tabBarHeight = 52 + insets.bottom;
+    // Calculate tab bar height (52px + bottom inset for iOS, 12px padding for Android)
+    const tabBarHeight = 52 + (Platform.OS === 'ios' ? insets.bottom : 12);
     const REEL_HEIGHT = SCREEN_HEIGHT - tabBarHeight;
 
     const viewabilityConfig = useRef({
@@ -90,7 +91,6 @@ export default function ReelScreen() {
                 viewabilityConfig={viewabilityConfig.current}
                 onViewableItemsChanged={onViewableItemsChanged.current}
                 getItemLayout={getItemLayout}
-                removeClippedSubviews
                 maxToRenderPerBatch={3}
                 windowSize={5}
                 contentContainerStyle={{ paddingBottom: tabBarHeight }}

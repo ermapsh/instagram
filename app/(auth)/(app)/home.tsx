@@ -79,7 +79,7 @@ export default function HomeScreen() {
                 </View>
             </View>
         )
-    }, [])
+    }, [theme.color.text])
 
     return (
         <View style={[styles.container, { backgroundColor: theme.color.background, paddingTop: insets.top }]}>

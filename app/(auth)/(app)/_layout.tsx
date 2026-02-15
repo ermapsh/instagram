@@ -44,11 +44,7 @@ export default function AppLayout() {
                         const isFocused = state.index === index;
                         const routeName = route.name;
 
-                        const opacity = position.interpolate({
-                            inputRange: [index - 1, index, index + 1],
-                            outputRange: [0.4, 1, 0.4],
-                            extrapolate: 'clamp',
-                        });
+
 
                         const scale = position.interpolate({
                             inputRange: [index - 1, index, index + 1],
@@ -133,7 +129,7 @@ export default function AppLayout() {
             tabBarPosition="bottom"
             tabBar={renderTabBar}
             screenOptions={{
-                swipeEnabled: false,
+                swipeEnabled: true,
                 animationEnabled: true,
                 tabBarIndicatorStyle: { height: 0 },
             }}

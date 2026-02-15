@@ -1,8 +1,8 @@
 import { StoryItem } from '@/components/home/StoryItem';
 import { useAppTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -30,7 +30,7 @@ export default function MessageScreen() {
     const insets = useSafeAreaInsets();
     const [activeTab, setActiveTab] = useState<'Primary' | 'Requests'>('Primary');
 
-    const renderNoteItem = ({ item }: { item: typeof NOTES_DATA[0] }) => (
+    const renderNoteItem = useCallback(({ item }: { item: typeof NOTES_DATA[0] }) => (
         <View style={styles.noteItem}>
             {/* Bubble */}
             <View style={[styles.noteBubble, { backgroundColor: theme.color.backgroundElevated }]}>
@@ -56,9 +56,9 @@ export default function MessageScreen() {
                 {item.username}
             </Text>
         </View>
-    );
+    ), [theme]);
 
-    const renderMessageItem = ({ item }: { item: typeof MESSAGES_DATA[0] }) => (
+    const renderMessageItem = useCallback(({ item }: { item: typeof MESSAGES_DATA[0] }) => (
         <TouchableOpacity style={styles.messageItem} activeOpacity={0.7}>
             <View style={styles.messageAvatarContainer}>
                 <StoryItem
@@ -100,7 +100,7 @@ export default function MessageScreen() {
                 <Ionicons name="camera-outline" size={26} color={theme.color.text} style={{ opacity: 0.6 }} />
             </TouchableOpacity>
         </TouchableOpacity>
-    );
+    ), [theme]);
 
     return (
         <View style={[styles.container, { backgroundColor: theme.color.background, paddingTop: insets.top }]}>
@@ -115,57 +115,52 @@ export default function MessageScreen() {
                 </TouchableOpacity>
             </View>
 
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                {/* Search Bar */}
-                <View style={[styles.searchContainer, { backgroundColor: theme.color.backgroundElevated }]}>
-                    <Ionicons name="search" size={20} color={theme.color.textSecondary} />
-                    <TextInput
-                        placeholder="Search or ask Meta AI"
-                        placeholderTextColor={theme.color.textSecondary}
-                        style={[styles.searchInput, { color: theme.color.text }]}
-                    />
-                </View>
+            <FlatList
+                data={MESSAGES_DATA}
+                renderItem={renderMessageItem}
+                keyExtractor={item => item.id}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                ListHeaderComponent={
+                    <>
+                        {/* Search Bar */}
+                        <View style={[styles.searchContainer, { backgroundColor: theme.color.backgroundElevated }]}>
+                            <Ionicons name="search" size={20} color={theme.color.textSecondary} />
+                            <TextInput
+                                placeholder="Search or ask Meta AI"
+                                placeholderTextColor={theme.color.textSecondary}
+                                style={[styles.searchInput, { color: theme.color.text }]}
+                            />
+                        </View>
 
-                {/* Notes Section */}
-                <View style={styles.notesContainer}>
-                    <FlatList
-                        horizontal
-                        data={NOTES_DATA}
-                        renderItem={renderNoteItem}
-                        keyExtractor={item => item.id}
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.notesList}
-                    />
-                </View>
+                        {/* Notes Section */}
+                        <View style={styles.notesContainer}>
+                            <FlatList
+                                horizontal
+                                data={NOTES_DATA}
+                                renderItem={renderNoteItem}
+                                keyExtractor={item => item.id}
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={styles.notesList}
+                            />
+                        </View>
 
-                {/* Tabs */}
-                <View style={styles.tabsContainer}>
-                    <TouchableOpacity onPress={() => setActiveTab('Primary')} style={styles.tabButton}>
-                        <Text style={[styles.tabText, { color: activeTab === 'Primary' ? theme.color.text : theme.color.textSecondary }]}>
-                            Messages
-                        </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setActiveTab('Requests')} style={styles.tabButton}>
-                        <Text style={[styles.tabText, { color: activeTab === 'Requests' ? theme.color.text : theme.color.textSecondary }]}>
-                            Requests
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Messages List */}
-                {/* <View style={styles.messagesList}>
-                    {MESSAGES_DATA.map(item => (
-                        <React.Fragment key={item.id}>
-                            {renderMessageItem({ item })}
-                        </React.Fragment>
-                    ))}
-                </View> */}
-                <FlatList
-                    data={MESSAGES_DATA}
-                    renderItem={renderMessageItem}
-                    keyExtractor={item => item.id}
-                />
-            </ScrollView>
+                        {/* Tabs */}
+                        <View style={styles.tabsContainer}>
+                            <TouchableOpacity onPress={() => setActiveTab('Primary')} style={styles.tabButton}>
+                                <Text style={[styles.tabText, { color: activeTab === 'Primary' ? theme.color.text : theme.color.textSecondary }]}>
+                                    Messages
+                                </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setActiveTab('Requests')} style={styles.tabButton}>
+                                <Text style={[styles.tabText, { color: activeTab === 'Requests' ? theme.color.text : theme.color.textSecondary }]}>
+                                    Requests
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </>
+                }
+            />
         </View>
     );
 }

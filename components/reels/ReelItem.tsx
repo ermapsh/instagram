@@ -50,7 +50,10 @@ export const ReelItem = ({
     const [isFastForwarding, setIsFastForwarding] = useState(false);
     const [duration, setDuration] = useState(0);
     const [isScrubbing, setIsScrubbing] = useState(false);
-    const [barWidth, setBarWidth] = useState(0);
+
+    // Refs for stable access in gesture callbacks
+    // const barWidthRef = React.useRef(SCREEN_WIDTH); // Not needed if we use global constant
+    const durationRef = React.useRef(0);
 
     const player = useVideoPlayer(videoUrl, (player) => {
         player.loop = true;
@@ -65,19 +68,19 @@ export const ReelItem = ({
     };
 
     const handleScrub = (x: number) => {
-        if (barWidth <= 0 || !duration) return;
+        const width = SCREEN_WIDTH;
+        const dur = durationRef.current;
 
-        const usefulWidth = barWidth;
-        const relativeX = x;
+        if (width <= 0 || !dur) return;
 
-        let percent = relativeX / usefulWidth;
+        let percent = x / width;
         percent = Math.max(0, Math.min(1, percent));
 
         setProgress(percent * 100);
-        player.currentTime = percent * duration;
+        player.currentTime = percent * dur;
     };
 
-    const scrubGesture = Gesture.Pan()
+    const scrubGesture = React.useMemo(() => Gesture.Pan()
         .minDistance(0)
         .onStart((e) => {
             runOnJS(setIsScrubbing)(true);
@@ -88,32 +91,40 @@ export const ReelItem = ({
         })
         .onEnd(() => {
             runOnJS(setIsScrubbing)(false);
-            // scheduleOnRN(setIsScrubbing)(false);
-        });
+        }), []);
 
     const togglePlay = () => {
         setIsPlaying(!isPlaying);
     };
 
-    const tapGesture = Gesture.Tap()
+    const tapGesture = React.useMemo(() => Gesture.Tap()
         .onEnd(() => {
             runOnJS(togglePlay)();
-        });
+        }), [isPlaying]); // Re-create if isPlaying changes (togglePlay logic) - actually togglePlay depends on isPlaying state, so wrapper needed?
+    // Better: use function form of state setter inside togglePlay? setIsPlaying(p => !p).
+    // Then togglePlay is stable.
 
-    const longPressGesture = Gesture.LongPress()
+    // Fix togglePlay dependency
+    const stableTogglePlay = () => setIsPlaying(p => !p);
+
+    const stableTapGesture = React.useMemo(() => Gesture.Tap()
+        .onEnd(() => {
+            runOnJS(stableTogglePlay)();
+        }), []);
+
+    const longPressGesture = React.useMemo(() => Gesture.LongPress()
         .minDuration(300)
         .onStart((e) => {
             const { x } = e;
-            // Right 40% (x > 0.6) or Left 10% (x < 0.1)
             if (x > SCREEN_WIDTH * 0.6 || x < SCREEN_WIDTH * 0.1) {
                 runOnJS(setPlaybackSpeed)(2.0);
             }
         })
         .onFinalize(() => {
             runOnJS(setPlaybackSpeed)(1.0);
-        });
+        }), []);
 
-    const composedGestures = Gesture.Race(longPressGesture, tapGesture);
+    const composedGestures = Gesture.Race(longPressGesture, stableTapGesture);
 
     useEffect(() => {
         if (isVisible && isPlaying) {
@@ -145,6 +156,7 @@ export const ReelItem = ({
                 if (total > 0) {
                     setProgress((current / total) * 100);
                     setDuration(total);
+                    durationRef.current = total; // Sync ref
                 }
             }
         }, 100);
@@ -257,7 +269,6 @@ export const ReelItem = ({
             <GestureDetector gesture={scrubGesture}>
                 <View
                     style={styles.progressContainer}
-                    onLayout={(e) => setBarWidth(e.nativeEvent.layout.width)}
                 >
                     <Animated.View style={[styles.progressBackground, progressBarStyle]}>
                         <View style={[styles.progressFill, { width: `${progress}%` }]} />

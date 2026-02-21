@@ -7,7 +7,7 @@ export const unstable_settings = {
     anchor: '(app)/home',
 };
 
-export default function _layout() {
+export default function Layout() {
     const theme = useAppTheme();
     return (
         <Stack>
@@ -54,6 +54,12 @@ export default function _layout() {
             />
             <Stack.Screen
                 name="(app)"
+                options={{
+                    headerShown: false
+                }}
+            />
+            <Stack.Screen
+                name="(screen)"
                 options={{
                     headerShown: false
                 }}

@@ -2,6 +2,7 @@ import { PostItem } from '@/components/home/PostItem';
 import { StoryItem } from '@/components/home/StoryItem';
 import { BadgedIcon } from '@/components/ui/badged-icon';
 import { useAppTheme } from '@/hooks/useTheme';
+import { useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
@@ -41,6 +42,7 @@ const POSTS = [
 export default function HomeScreen() {
     const theme = useAppTheme();
     const insets = useSafeAreaInsets();
+    const router = useRouter();
 
     const RenderStories = () => (
         <View style={styles.storiesContainer}>
@@ -62,13 +64,17 @@ export default function HomeScreen() {
         </View>
     );
 
+    const toFavourite = useCallback(() => {
+        router.navigate('/(auth)/(screen)/notification')
+    }, [router])
+
     const Header = useCallback(() => {
         return (
             <View style={styles.topBar}>
                 <Icon source={require("@/assets/icons/plus.png")} size={26} color={theme.color.text} />
                 <Text style={[styles.logo, { color: theme.color.text }]}>Instagram</Text>
                 <View style={styles.topBarIcons}>
-                    <TouchableOpacity style={styles.iconButton}>
+                    <TouchableOpacity style={styles.iconButton} onPress={toFavourite}>
                         <BadgedIcon
                             size={26}
                             color={theme.color.text}
@@ -79,7 +85,7 @@ export default function HomeScreen() {
                 </View>
             </View>
         )
-    }, [theme.color.text])
+    }, [theme.color.text, toFavourite])
 
     return (
         <View style={[styles.container, { backgroundColor: theme.color.background, paddingTop: insets.top }]}>

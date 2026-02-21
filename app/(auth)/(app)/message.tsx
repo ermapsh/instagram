@@ -1,7 +1,7 @@
 import { StoryItem } from '@/components/home/StoryItem';
 import { useAppTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -29,6 +29,10 @@ export default function MessageScreen() {
     const theme = useAppTheme();
     const insets = useSafeAreaInsets();
     const [activeTab, setActiveTab] = useState<'Primary' | 'Requests'>('Primary');
+
+    useEffect(() => {
+        console.log('MessageScreen mounted');
+    }, [])
 
     const renderNoteItem = useCallback(({ item }: { item: typeof NOTES_DATA[0] }) => (
         <View style={styles.noteItem}>

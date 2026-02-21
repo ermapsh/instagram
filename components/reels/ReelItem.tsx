@@ -1,13 +1,11 @@
-import { useAppTheme } from '@/hooks/useTheme';
 import { Image } from 'expo-image';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import React, { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Icon } from 'react-native-paper';
-import { runOnJS } from 'react-native-reanimated';
-// Added withTiming here
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
+import { scheduleOnRN } from 'react-native-worklets';
 import { MarqueeText } from '../common/MarqueeText';
 import { StoryItem } from '../home/StoryItem';
 
@@ -42,7 +40,7 @@ export const ReelItem = ({
     isVisible = false,
     isActive = false,
 }: ReelItemProps) => {
-    const theme = useAppTheme();
+    // const theme = useAppTheme();
     const [progress, setProgress] = useState(0);
     const [isReposted, setIsReposted] = useState(false);
 
@@ -83,14 +81,14 @@ export const ReelItem = ({
     const scrubGesture = React.useMemo(() => Gesture.Pan()
         .minDistance(0)
         .onStart((e) => {
-            runOnJS(setIsScrubbing)(true);
-            runOnJS(handleScrub)(e.x);
+            scheduleOnRN(() => setIsScrubbing(true))
+            scheduleOnRN(() => handleScrub(e.x))
         })
         .onUpdate((e) => {
-            runOnJS(handleScrub)(e.x);
+            scheduleOnRN(() => handleScrub(e.x));
         })
         .onEnd(() => {
-            runOnJS(setIsScrubbing)(false);
+            scheduleOnRN(() => setIsScrubbing(false));
         }), []);
 
     const togglePlay = () => {
@@ -99,7 +97,7 @@ export const ReelItem = ({
 
     const tapGesture = React.useMemo(() => Gesture.Tap()
         .onEnd(() => {
-            runOnJS(togglePlay)();
+            scheduleOnRN(() => togglePlay())
         }), [isPlaying]); // Re-create if isPlaying changes (togglePlay logic) - actually togglePlay depends on isPlaying state, so wrapper needed?
     // Better: use function form of state setter inside togglePlay? setIsPlaying(p => !p).
     // Then togglePlay is stable.
@@ -109,7 +107,7 @@ export const ReelItem = ({
 
     const stableTapGesture = React.useMemo(() => Gesture.Tap()
         .onEnd(() => {
-            runOnJS(stableTogglePlay)();
+            scheduleOnRN(stableTogglePlay)
         }), []);
 
     const longPressGesture = React.useMemo(() => Gesture.LongPress()
@@ -117,11 +115,11 @@ export const ReelItem = ({
         .onStart((e) => {
             const { x } = e;
             if (x > SCREEN_WIDTH * 0.6 || x < SCREEN_WIDTH * 0.1) {
-                runOnJS(setPlaybackSpeed)(2.0);
+                scheduleOnRN(() => setPlaybackSpeed(2.0));
             }
         })
         .onFinalize(() => {
-            runOnJS(setPlaybackSpeed)(1.0);
+            scheduleOnRN(() => setPlaybackSpeed(1.0));
         }), []);
 
     const composedGestures = Gesture.Race(longPressGesture, stableTapGesture);
@@ -133,7 +131,12 @@ export const ReelItem = ({
             player.pause();
         }
         return () => {
-            player.pause();
+            try {
+                if (player && !isVisible && player?.pause) player?.pause();
+            } catch (err) {
+                // console.error(err);
+                // Ignore if native shared object is already destroyed
+            }
         };
     }, [isVisible, isPlaying, player]);
 
@@ -174,7 +177,7 @@ export const ReelItem = ({
 
     useEffect(() => {
         if (!isPlaying) {
-            playIconScale.value = withSpring(1, { damping: 10, stiffness: 200 });
+            playIconScale.value = withTiming(1, { duration: 200 });
         } else {
             playIconScale.value = withTiming(0, { duration: 200 });
         }

@@ -83,7 +83,7 @@ export default function AppLayout() {
 
                         const iconSource = getIconSource(routeName, isFocused);
                         const iconColor = theme.color.text;
-                        const iconSize = 26;
+                        const iconSize = 24;
 
                         return (
                             <TouchableOpacity
@@ -129,6 +129,7 @@ export default function AppLayout() {
             tabBarPosition="bottom"
             tabBar={renderTabBar}
             screenOptions={{
+                lazy: true, // true = only render current tab, false = render all tabs
                 swipeEnabled: true,
                 animationEnabled: true,
                 tabBarIndicatorStyle: { height: 0 },

@@ -1,7 +1,8 @@
 import { useAppTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'expo-image';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -42,10 +43,83 @@ const POSTS_DATA = [
     { id: '9', type: 'image', uri: 'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=400&q=80' },
 ];
 
+const Tab = createMaterialTopTabNavigator();
+
+const renderPostItem = ({ item }: { item: typeof POSTS_DATA[0] }) => (
+    <TouchableOpacity activeOpacity={0.8} style={styles.postItem}>
+        <Image source={{ uri: item.uri }} style={styles.postImage} contentFit="cover" transition={200} />
+        {item.multiple && (
+            <Ionicons name="layers" size={16} color="white" style={styles.multipleIcon} />
+        )}
+    </TouchableOpacity>
+);
+
+const EmptyComponent = () => {
+    const theme = useAppTheme();
+    return (
+        <View style={{ flex: 1, padding: 40, alignItems: 'center', backgroundColor: theme.color.background }}>
+            <Text style={{ color: theme.color.textSecondary, fontSize: 16 }}>No posts yet</Text>
+        </View>
+    );
+};
+
+// Tab Screens
+function GridTab() {
+    const theme = useAppTheme();
+    return (
+        <FlatList
+            data={POSTS_DATA}
+            renderItem={renderPostItem}
+            keyExtractor={item => item.id}
+            numColumns={3}
+            ListEmptyComponent={EmptyComponent}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ backgroundColor: theme.color.background, flexGrow: 1 }}
+            style={{ backgroundColor: theme.color.background }}
+        />
+    )
+}
+
+function ReelTab() {
+    const theme = useAppTheme();
+    return (
+        <FlatList
+            data={POSTS_DATA.slice(0, 5)}
+            renderItem={renderPostItem}
+            keyExtractor={item => item.id}
+            numColumns={3}
+            ListEmptyComponent={EmptyComponent}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ backgroundColor: theme.color.background, flexGrow: 1 }}
+            style={{ backgroundColor: theme.color.background }}
+        />
+    )
+}
+
+function RepostTab() {
+    const theme = useAppTheme();
+    return <EmptyComponent />;
+}
+
+function TagTab() {
+    const theme = useAppTheme();
+    return (
+        <FlatList
+            data={POSTS_DATA.slice(2, 6)}
+            renderItem={renderPostItem}
+            keyExtractor={item => item.id}
+            numColumns={3}
+            ListEmptyComponent={EmptyComponent}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ backgroundColor: theme.color.background, flexGrow: 1 }}
+            style={{ backgroundColor: theme.color.background }}
+        />
+    )
+}
+
 export default function ProfileScreen() {
     const theme = useAppTheme();
     const insets = useSafeAreaInsets();
-    const [selectedTab, setSelectedTab] = useState(0); // 0: Grid, 1: Reels, 2: Tagged
 
     const highlightData = useMemo(() => HIGHLIGHTS_DATA, []);
 
@@ -65,151 +139,6 @@ export default function ProfileScreen() {
             <Text style={[styles.highlightTitle, { color: theme.color.text }]} numberOfLines={1}>
                 {item.title}
             </Text>
-        </View>
-    ), [theme]);
-
-    const renderPostItem = useCallback(({ item }: { item: typeof POSTS_DATA[0] }) => (
-        <TouchableOpacity activeOpacity={0.8} style={styles.postItem}>
-            <Image source={{ uri: item.uri }} style={styles.postImage} contentFit="cover" transition={200} />
-            {item.multiple && (
-                <Ionicons name="layers" size={16} color="white" style={styles.multipleIcon} />
-            )}
-        </TouchableOpacity>
-    ), []);
-
-    const ListHeader = useCallback(() => (
-        <View style={styles.headerContent}>
-            {/* Top Stat Row */}
-            <View style={styles.topRow}>
-                {/* Avatar with Note */}
-                <View style={styles.avatarSection}>
-                    <View style={[styles.noteBubble, { backgroundColor: theme.color.backgroundElevated }]}>
-                        <Text style={[styles.noteText, { color: theme.color.text }]}>{PROFILE_DATA.note}</Text>
-                        <View style={[styles.bubbleTail, { backgroundColor: theme.color.backgroundElevated }]} />
-                    </View>
-                    <View style={styles.storyRing}>
-                        <Image source={{ uri: PROFILE_DATA.avatar }} style={styles.avatarImage} />
-                        <View style={[styles.plusBadge, { backgroundColor: theme.color.background }]}>
-                            <Ionicons name="add-circle" size={24} color={theme.color.text} />
-                        </View>
-                    </View>
-                </View>
-
-                {/* Stats */}
-                <View style={styles.statsSection}>
-                    <View style={styles.statItem}>
-                        <Text style={[styles.statNumber, { color: theme.color.text }]}>{PROFILE_DATA.postsCount}</Text>
-                        <Text style={[styles.statLabel, { color: theme.color.text }]}>posts</Text>
-                    </View>
-                    <View style={styles.statItem}>
-                        <Text style={[styles.statNumber, { color: theme.color.text }]}>{PROFILE_DATA.followersCount}</Text>
-                        <Text style={[styles.statLabel, { color: theme.color.text }]}>followers</Text>
-                    </View>
-                    <View style={styles.statItem}>
-                        <Text style={[styles.statNumber, { color: theme.color.text }]}>{PROFILE_DATA.followingCount}</Text>
-                        <Text style={[styles.statLabel, { color: theme.color.text }]}>following</Text>
-                    </View>
-                </View>
-            </View>
-
-            {/* Bio Section */}
-            <View style={styles.bioSection}>
-                <Text style={[styles.bioName, { color: theme.color.text }]}>{PROFILE_DATA.name}</Text>
-                <Text style={[styles.bioText, { color: theme.color.text }]}>{PROFILE_DATA.bio}</Text>
-
-                {/* Link */}
-                <View style={styles.linkContainer}>
-                    <Ionicons name="link" size={14} color={theme.color.brand} style={{ transform: [{ rotate: '45deg' }] }} />
-                    <Text style={[styles.linkText, { color: theme.color.brand }]}>{PROFILE_DATA.link}</Text>
-                </View>
-
-                {/* Music (if any) */}
-                <View style={styles.musicContainer}>
-                    <Ionicons name="play-circle-outline" size={14} color={theme.color.text} />
-                    <Text style={[styles.musicText, { color: theme.color.text }]}>{PROFILE_DATA.music}</Text>
-                </View>
-            </View>
-
-            {/* Action Buttons */}
-            <View style={styles.actionsRow}>
-                <TouchableOpacity style={[styles.actionButton, { backgroundColor: theme.color.backgroundElevated }]}>
-                    <Text style={[styles.actionButtonText, { color: theme.color.text }]}>Edit profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButton, { backgroundColor: theme.color.backgroundElevated }]}>
-                    <Text style={[styles.actionButtonText, { color: theme.color.text }]}>Share profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButtonIcon, { backgroundColor: theme.color.backgroundElevated }]}>
-                    <Ionicons name="person-add-outline" size={18} color={theme.color.text} />
-                </TouchableOpacity>
-            </View>
-
-            {/* Highlights */}
-            <View style={styles.highlightsContainer}>
-                <FlatList
-                    horizontal
-                    data={highlightData}
-                    renderItem={renderHighlight}
-                    keyExtractor={item => item.id}
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{ paddingHorizontal: 16 }}
-                />
-            </View>
-
-            {/* Tab Bar */}
-            <View style={styles.tabBar}>
-                <TouchableOpacity
-                    style={[styles.tabItem, selectedTab === 0 && { borderBottomColor: theme.color.text }]}
-                    onPress={() => setSelectedTab(0)}
-                >
-                    <Image
-                        source={selectedTab === 0 ? require('@/assets/icons/grid.png') : require('@/assets/icons/grid-outline.png')}
-                        style={{ width: 24, height: 24, tintColor: theme.color.text }}
-                    />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.tabItem, selectedTab === 1 && { borderBottomColor: theme.color.text }]}
-                    onPress={() => setSelectedTab(1)}
-                >
-                    <Image
-                        source={selectedTab === 1 ? require('@/assets/icons/reel.png') : require('@/assets/icons/reel-outline.png')}
-                        style={{ width: 24, height: 24, tintColor: theme.color.text }}
-                    />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.tabItem, selectedTab === 2 && { borderBottomColor: theme.color.text }]}
-                    onPress={() => setSelectedTab(2)}
-                >
-                    <Image
-                        source={require('@/assets/icons/repost.png')}
-                        style={{ width: 26, height: 26, tintColor: selectedTab === 2 ? theme.color.text : theme.color.textSecondary }}
-                    />
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.tabItem, selectedTab === 3 && { borderBottomColor: theme.color.text }]}
-                    onPress={() => setSelectedTab(3)}
-                >
-                    <Image
-                        source={selectedTab === 3 ? require('@/assets/icons/tag.png') : require('@/assets/icons/tag-outline.png')}
-                        style={{ width: 26, height: 26, tintColor: theme.color.text }}
-                    />
-                </TouchableOpacity>
-            </View>
-        </View>
-    ), [theme, selectedTab, highlightData, renderHighlight]);
-
-    const tabData = useMemo(() => {
-        switch (selectedTab) {
-            case 0: return POSTS_DATA;
-            case 1: return POSTS_DATA.slice(0, 5).map(p => ({ ...p, type: 'reel' })); // Mock Reels
-            case 2: return []; // Reposts Placeholder
-            case 3: return POSTS_DATA.slice(2, 6); // Mock Tagged
-            default: return POSTS_DATA;
-        }
-    }, [selectedTab]);
-
-    const renderEmptyComponent = useCallback(() => (
-        <View style={{ padding: 40, alignItems: 'center' }}>
-            <Text style={{ color: theme.color.textSecondary, fontSize: 16 }}>No posts yet</Text>
         </View>
     ), [theme]);
 
@@ -241,17 +170,142 @@ export default function ProfileScreen() {
                 </View>
             </View>
 
-            <FlatList
-                data={tabData}
-                renderItem={renderPostItem}
-                keyExtractor={(item, index) => item.id + index}
-                numColumns={3}
-                key={selectedTab.toString()} // Force re-render when switching tabs (cols might change if we supported different layouts)
-                ListHeaderComponent={ListHeader}
-                ListEmptyComponent={renderEmptyComponent}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: 100 }}
-            />
+            <View style={styles.headerContent}>
+                {/* Top Stat Row */}
+                <View style={styles.topRow}>
+                    {/* Avatar with Note */}
+                    <View style={styles.avatarSection}>
+                        <View style={[styles.noteBubble, { backgroundColor: theme.color.backgroundElevated }]}>
+                            <Text style={[styles.noteText, { color: theme.color.text }]}>{PROFILE_DATA.note}</Text>
+                            <View style={[styles.bubbleTail, { backgroundColor: theme.color.backgroundElevated }]} />
+                        </View>
+                        <View style={styles.storyRing}>
+                            <Image source={{ uri: PROFILE_DATA.avatar }} style={styles.avatarImage} />
+                            <View style={[styles.plusBadge, { backgroundColor: theme.color.background }]}>
+                                <Ionicons name="add-circle" size={24} color={theme.color.text} />
+                            </View>
+                        </View>
+                    </View>
+
+                    {/* Stats */}
+                    <View style={styles.statsSection}>
+                        <View style={styles.statItem}>
+                            <Text style={[styles.statNumber, { color: theme.color.text }]}>{PROFILE_DATA.postsCount}</Text>
+                            <Text style={[styles.statLabel, { color: theme.color.text }]}>posts</Text>
+                        </View>
+                        <View style={styles.statItem}>
+                            <Text style={[styles.statNumber, { color: theme.color.text }]}>{PROFILE_DATA.followersCount}</Text>
+                            <Text style={[styles.statLabel, { color: theme.color.text }]}>followers</Text>
+                        </View>
+                        <View style={styles.statItem}>
+                            <Text style={[styles.statNumber, { color: theme.color.text }]}>{PROFILE_DATA.followingCount}</Text>
+                            <Text style={[styles.statLabel, { color: theme.color.text }]}>following</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Bio Section */}
+                <View style={styles.bioSection}>
+                    <Text style={[styles.bioName, { color: theme.color.text }]}>{PROFILE_DATA.name}</Text>
+                    <Text style={[styles.bioText, { color: theme.color.text }]}>{PROFILE_DATA.bio}</Text>
+
+                    {/* Link */}
+                    <View style={styles.linkContainer}>
+                        <Ionicons name="link" size={14} color={theme.color.brand} style={{ transform: [{ rotate: '45deg' }] }} />
+                        <Text style={[styles.linkText, { color: theme.color.brand }]}>{PROFILE_DATA.link}</Text>
+                    </View>
+
+                    {/* Music (if any) */}
+                    <View style={styles.musicContainer}>
+                        <Ionicons name="play-circle-outline" size={14} color={theme.color.text} />
+                        <Text style={[styles.musicText, { color: theme.color.text }]}>{PROFILE_DATA.music}</Text>
+                    </View>
+                </View>
+
+                {/* Action Buttons */}
+                <View style={styles.actionsRow}>
+                    <TouchableOpacity style={[styles.actionButton, { backgroundColor: theme.color.backgroundElevated }]}>
+                        <Text style={[styles.actionButtonText, { color: theme.color.text }]}>Edit profile</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.actionButton, { backgroundColor: theme.color.backgroundElevated }]}>
+                        <Text style={[styles.actionButtonText, { color: theme.color.text }]}>Share profile</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.actionButtonIcon, { backgroundColor: theme.color.backgroundElevated }]}>
+                        <Ionicons name="person-add-outline" size={18} color={theme.color.text} />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Highlights */}
+                <View style={styles.highlightsContainer}>
+                    <FlatList
+                        horizontal
+                        data={highlightData}
+                        renderItem={renderHighlight}
+                        keyExtractor={item => item.id}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingHorizontal: 16 }}
+                    />
+                </View>
+            </View>
+
+            {/* Material Top Tabs */}
+            <Tab.Navigator
+                screenOptions={{
+                    tabBarShowLabel: false,
+                    tabBarIndicatorStyle: { backgroundColor: theme.color.text, height: 1 },
+                    tabBarItemStyle: { height: 44 },
+                    tabBarStyle: { backgroundColor: theme.color.background, elevation: 0, shadowOpacity: 0 },
+                }}
+            >
+                <Tab.Screen
+                    name="Grid"
+                    component={GridTab}
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <Image
+                                source={focused ? require('@/assets/icons/grid.png') : require('@/assets/icons/grid-outline.png')}
+                                style={{ width: 24, height: 24, tintColor: focused ? theme.color.text : theme.color.textSecondary }}
+                            />
+                        )
+                    }}
+                />
+                <Tab.Screen
+                    name="Reel"
+                    component={ReelTab}
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <Image
+                                source={focused ? require('@/assets/icons/reel.png') : require('@/assets/icons/reel-outline.png')}
+                                style={{ width: 24, height: 24, tintColor: focused ? theme.color.text : theme.color.textSecondary }}
+                            />
+                        )
+                    }}
+                />
+                <Tab.Screen
+                    name="Repost"
+                    component={RepostTab}
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <Image
+                                source={require('@/assets/icons/repost.png')}
+                                style={{ width: 26, height: 26, tintColor: focused ? theme.color.text : theme.color.textSecondary }}
+                            />
+                        )
+                    }}
+                />
+                <Tab.Screen
+                    name="Tag"
+                    component={TagTab}
+                    options={{
+                        tabBarIcon: ({ focused }) => (
+                            <Image
+                                source={focused ? require('@/assets/icons/tag.png') : require('@/assets/icons/tag-outline.png')}
+                                style={{ width: 26, height: 26, tintColor: focused ? theme.color.text : theme.color.textSecondary }}
+                            />
+                        )
+                    }}
+                />
+            </Tab.Navigator>
         </View>
     );
 }
@@ -289,7 +343,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         backgroundColor: '#ff3b30',
         marginLeft: -2,
-        marginTop: -2, // Just a visual adjustment
+        marginTop: -2,
     },
     navRight: {
         flexDirection: 'row',
@@ -361,11 +415,8 @@ const styles = StyleSheet.create({
         height: 86,
         borderRadius: 43,
         padding: 3,
-        // Gradient logic would go here, simpler to use a solid color or image border for now
-        // For accurate gradient ring, we'd need a LinearGradient component or SVG.
-        // Using a red border to simulate active story for now as per image logic.
         borderWidth: 2,
-        borderColor: '#e1306c', // Instagram pink/red
+        borderColor: '#e1306c',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -466,7 +517,7 @@ const styles = StyleSheet.create({
         width: 64,
         height: 64,
         borderRadius: 32,
-        borderWidth: .5, // Thin grey border
+        borderWidth: .5,
         padding: 2,
         justifyContent: 'center',
         alignItems: 'center',
@@ -476,7 +527,6 @@ const styles = StyleSheet.create({
         width: 58,
         height: 58,
         borderRadius: 29,
-        // backgroundColor handled in component
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
@@ -489,23 +539,10 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textAlign: 'center',
     },
-    tabBar: {
-        flexDirection: 'row',
-        height: 44,
-        alignItems: 'center',
-    },
-    tabItem: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        borderBottomWidth: 1,
-        borderBottomColor: 'transparent',
-    },
     postItem: {
         width: ITEM_WIDTH,
         height: ITEM_WIDTH,
-        padding: 0.5, // Grid gap
+        padding: 0.5,
     },
     postImage: {
         width: '100%',

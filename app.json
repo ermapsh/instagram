@@ -8,9 +8,6 @@
     "scheme": "instagram",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "web": {
-      "bundler": "metro"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.ermapsh.instagram",

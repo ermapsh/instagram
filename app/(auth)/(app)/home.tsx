@@ -2,9 +2,10 @@ import { PostItem } from '@/components/home/PostItem';
 import { StoryItem } from '@/components/home/StoryItem';
 import { BadgedIcon } from '@/components/ui/badged-icon';
 import { useAppTheme } from '@/hooks/useTheme';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -70,19 +71,42 @@ export default function HomeScreen() {
 
     const Header = useCallback(() => {
         return (
-            <View style={styles.topBar}>
-                <Icon source={require("@/assets/icons/plus.png")} size={26} color={theme.color.text} />
-                <Text style={[styles.logo, { color: theme.color.text }]}>Instagram</Text>
-                <View style={styles.topBarIcons}>
-                    <TouchableOpacity style={styles.iconButton} onPress={toFavourite}>
+            <View className="h-[50px] flex-row items-center px-4">
+
+                {/* Left */}
+                <View className="flex-1">
+                    <Icon
+                        source={require("@/assets/icons/plus.png")}
+                        size={26}
+                        color={theme.color.text}
+                    />
+                </View>
+
+                {/* Center */}
+                <View className="flex-1 items-center">
+                    <Image
+                        source={require('@/assets/images/logoname.png')}
+                        style={{
+                            width: 170,
+                            height: 40,
+                            tintColor: theme.color.text,
+                        }}
+                        contentFit="contain"
+                    />
+                </View>
+
+                {/* Right */}
+                <View className="flex-1 items-end">
+                    <TouchableOpacity onPress={toFavourite}>
                         <BadgedIcon
                             size={26}
                             color={theme.color.text}
                             source={require('@/assets/icons/heart-outline.png')}
-                            hasBadge={true}
+                            hasBadge
                         />
                     </TouchableOpacity>
                 </View>
+
             </View>
         )
     }, [theme.color.text, toFavourite])
@@ -130,7 +154,9 @@ const styles = StyleSheet.create({
         fontFamily: 'System', // Or specific Instagram font if available. 'System' works well on iOS.
     },
     topBarIcons: {
+        flex: 1,
         flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
     iconButton: {
         marginLeft: 20,

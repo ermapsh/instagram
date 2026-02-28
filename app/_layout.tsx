@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import "../global.css";
 import RNPaperProvider from '../provider/RNPaperProvider';
 
 export const unstable_settings = {

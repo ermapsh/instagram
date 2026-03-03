@@ -7,15 +7,21 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Icon } from "react-native-paper";
 import { GlassIcon } from "./ui/glass-utility";
 
-interface apppheader { showBack?: boolean, title?: string, showRight?: boolean, rightComponent?: React.ReactNode }
+interface apppheader {
+    showBack?: boolean,
+    onPressBack?: () => void,
+    title?: string,
+    showRight?: boolean,
+    rightComponent?: React.ReactNode
+}
 
-export function AppHeader({ showBack = true, title = "", showRight = false, rightComponent }: apppheader) {
+export function AppHeader({ showBack = true, onPressBack, title = "", showRight = false, rightComponent }: apppheader) {
     const theme = useAppTheme();
     const router = useRouter();
     const glassEffect = useMemo(() => isGlassEffectAPIAvailable(), [])
     return (
         <View style={[styles.container, { backgroundColor: theme.color.background }]}>
-            <Pressable onPress={() => router.back()}>
+            <Pressable onPress={() => onPressBack ? onPressBack() : router.back()}>
                 {showBack && glassEffect ?
                     <GlassIcon icon={os === 'android' ? 'arrow-left' : 'chevron-left'} color={theme.color.text} size={28} /> :
                     <Icon source={os === 'android' ? 'arrow-left' : 'chevron-left'} color={theme.color.text} size={28} />}

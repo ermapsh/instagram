@@ -1,4 +1,5 @@
 import { AppHeader } from '@/components/app-header';
+import { GlassDialog } from '@/components/ui/glass-dialog';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -15,7 +16,7 @@ function Signup() {
     const [inputMode, setInputMode] = useState<'phone' | 'email'>('phone');
     const [mobileNumber, setMobileNumber] = useState('');
     const [email, setEmail] = useState('');
-    // const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+    const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
     const selectedCountry = {
         name: (params.selectedCountryName as string) || 'India',
@@ -32,10 +33,38 @@ function Signup() {
         }
     }, [isPhone])
 
+
+    const onPressBack = useCallback(() => {
+        try {
+            // Alert.alert(
+            //     "Do you want to stop creating your account?",
+            //     "If you stop now, you'll lose any progress that you've made.",
+            //     [
+            //         {
+            //             text: "Continue creating account",
+            //             style: "cancel",
+            //         },
+            //         {
+            //             text: "Stop creating account",
+            //             style: "default",
+            //             onPress: () => {
+            //                 router.back();
+            //             },
+            //         },
+            //     ],
+            //     { cancelable: true }
+            // );
+            setShowLeaveConfirm(true)
+        } catch (error) {
+
+        }
+    }, []);
+
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.color.background }]}>
             <AppHeader
                 showBack={true}
+                onPressBack={onPressBack}
             />
             <View style={styles.content}>
                 <View>
@@ -112,8 +141,8 @@ function Signup() {
                 </TouchableOpacity>
             </View>
 
-            {/* <GlassDialog
-                visible={true}
+            <GlassDialog
+                visible={showLeaveConfirm}
                 onClose={() => setShowLeaveConfirm(false)}
                 title="Do you want to stop creating your account?"
                 message="If you stop now, you'll lose any progress that you've made."
@@ -129,7 +158,7 @@ function Signup() {
                     label: "Continue creating account",
                     onPress: () => setShowLeaveConfirm(false)
                 }}
-            /> */}
+            />
         </SafeAreaView>
     );
 }

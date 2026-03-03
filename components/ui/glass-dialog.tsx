@@ -1,16 +1,16 @@
 import { GlassView } from 'expo-glass-effect';
 import React from 'react';
 import {
-    Animated,
     Dimensions,
+    Modal,
     Pressable,
     StyleSheet,
     Text,
     View,
     ViewStyle
 } from 'react-native';
-import { Portal } from 'react-native-paper';
 import { useAppTheme } from '../../hooks/useTheme';
+import { Button } from './button';
 
 interface GlassDialogProps {
     visible: boolean;
@@ -43,28 +43,14 @@ export const GlassDialog: React.FC<GlassDialogProps> = ({
     containerStyle,
 }) => {
     const theme = useAppTheme();
-    const [fadeAnim] = React.useState(new Animated.Value(0));
-
-    React.useEffect(() => {
-        if (visible) {
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 200,
-                useNativeDriver: true,
-            }).start();
-        } else {
-            Animated.timing(fadeAnim, {
-                toValue: 0,
-                duration: 150,
-                useNativeDriver: true,
-            }).start();
-        }
-    }, [visible, fadeAnim]);
-
-    if (!visible) return null;
 
     return (
-        <Portal>
+        <Modal
+            visible={visible}
+            transparent={true}
+            animationType="none"
+            onRequestClose={onClose}
+        >
             <View style={styles.centeredView}>
                 <Pressable onPress={(e) => e.stopPropagation()}>
                     <GlassView
@@ -89,50 +75,30 @@ export const GlassDialog: React.FC<GlassDialogProps> = ({
 
                             <View style={styles.actions}>
                                 {primaryAction && (
-                                    <Pressable
-                                        onPress={primaryAction.onPress}
-                                        style={({ pressed }) => [
-                                            styles.button,
-                                            styles.primaryButton,
-                                            {
-                                                backgroundColor: primaryAction.variant === 'danger'
-                                                    ? '#0095f6' // Instagram blue
-                                                    : theme.color.brand,
-                                                opacity: pressed ? 0.8 : 1
-                                            }
-                                        ]}
-                                    >
-                                        <Text style={styles.primaryButtonText}>
-                                            {primaryAction.label}
-                                        </Text>
-                                    </Pressable>
+                                    <Button
+                                        title={primaryAction.label}
+                                        variant="primary"
+                                        onPress={() => {
+                                            primaryAction.onPress();
+                                        }}
+                                    />
                                 )}
 
                                 {secondaryAction && (
-                                    <Pressable
-                                        onPress={secondaryAction.onPress}
-                                        style={({ pressed }) => [
-                                            styles.button,
-                                            styles.secondaryButton,
-                                            {
-                                                backgroundColor: theme
-                                                    ? 'rgba(255, 255, 255, 0.1)'
-                                                    : 'rgba(0, 0, 0, 0.05)',
-                                                opacity: pressed ? 0.8 : 1
-                                            }
-                                        ]}
-                                    >
-                                        <Text style={[styles.secondaryButtonText, { color: theme.color.text }]}>
-                                            {secondaryAction.label}
-                                        </Text>
-                                    </Pressable>
+                                    <Button
+                                        title={secondaryAction.label}
+                                        variant="outline"
+                                        onPress={() => {
+                                            secondaryAction.onPress();
+                                        }}
+                                    />
                                 )}
                             </View>
                         </View>
                     </GlassView>
                 </Pressable>
             </View>
-        </Portal>
+        </Modal>
     );
 };
 
@@ -162,33 +128,10 @@ const styles = StyleSheet.create({
     message: {
         fontSize: 14,
         textAlign: 'left',
-        marginBottom: 24,
+        marginBottom: 12,
         lineHeight: 20,
     },
     actions: {
         width: '100%',
-        gap: 12,
-    },
-    button: {
-        width: '100%',
-        height: 48,
-        borderRadius: 24,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    primaryButton: {
-        // Shadow/Elevation if needed
-    },
-    primaryButtonText: {
-        color: '#fff',
-        fontSize: 15,
-        fontWeight: '700',
-    },
-    secondaryButton: {
-        // Shadow/Elevation if needed
-    },
-    secondaryButtonText: {
-        fontSize: 15,
-        fontWeight: '600',
     },
 });

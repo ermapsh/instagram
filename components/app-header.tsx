@@ -1,7 +1,7 @@
 import { os } from "@/constant/os";
 import { useAppTheme } from "@/hooks/useTheme";
 import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { GlassIcon } from "./ui/glass-utility";
 
 interface apppheader { showBack?: boolean, title?: string, showRight?: boolean, rightComponent?: React.ReactNode }
@@ -11,7 +11,7 @@ export function AppHeader({ showBack = true, title = "", showRight = false, righ
     const router = useRouter();
 
     return (
-        <View style={{ paddingVertical: 12, backgroundColor: theme.color.background, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View style={[styles.container, { backgroundColor: theme.color.background }]}>
             <Pressable onPress={() => router.back()}>
                 {showBack && <GlassIcon icon={os === 'android' ? 'arrow-left' : 'chevron-left'} color={theme.color.text} size={28} />}
             </Pressable>
@@ -23,3 +23,11 @@ export function AppHeader({ showBack = true, title = "", showRight = false, righ
     )
 }
 
+const styles = StyleSheet.create({
+    container: {
+        paddingVertical: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    }
+})

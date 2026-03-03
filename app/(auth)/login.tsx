@@ -1,3 +1,4 @@
+import { AppHeader } from '@/components/app-header';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React, { memo, useCallback, useState } from 'react';
@@ -32,6 +33,9 @@ function Login() {
                 { backgroundColor: theme.color.background },
             ]}
         >
+            <AppHeader
+                showBack={true}
+            />
             <View style={styles.content}>
                 <Image
                     source={require("@/assets/images/join-screen/insta.png")}

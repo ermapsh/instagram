@@ -1,3 +1,4 @@
+import { AppHeader } from '@/components/app-header';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -33,6 +34,9 @@ function Signup() {
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: theme.color.background }]}>
+            <AppHeader
+                showBack={true}
+            />
             <View style={styles.content}>
                 <View>
                     <Text style={[styles.title, { color: theme.color.text }]}>
@@ -135,7 +139,8 @@ export default memo(Signup);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 24,
+        paddingHorizontal: 16,
+        paddingVertical: 8
     },
     content: {
         flex: 1,

@@ -1,3 +1,5 @@
+import { glassViewAvailable } from '@/constant/glassview';
+import { useAppTheme } from '@/hooks/useTheme';
 import { GlassView } from 'expo-glass-effect';
 import React from 'react';
 import {
@@ -9,7 +11,6 @@ import {
     View,
     ViewStyle
 } from 'react-native';
-import { useAppTheme } from '../../hooks/useTheme';
 import { Button } from './button';
 
 interface GlassDialogProps {
@@ -43,6 +44,7 @@ export const GlassDialog: React.FC<GlassDialogProps> = ({
     containerStyle,
 }) => {
     const theme = useAppTheme();
+    const DialogContainer: any = glassViewAvailable ? GlassView : View;
 
     return (
         <Modal
@@ -53,10 +55,11 @@ export const GlassDialog: React.FC<GlassDialogProps> = ({
         >
             <View style={styles.centeredView}>
                 <Pressable onPress={(e) => e.stopPropagation()}>
-                    <GlassView
+                    <DialogContainer
                         style={[
                             styles.modalContent,
-                            containerStyle
+                            containerStyle,
+                            !glassViewAvailable && { backgroundColor: theme.color.background }
                         ]}
                     >
                         <View style={styles.innerContent}>
@@ -95,7 +98,7 @@ export const GlassDialog: React.FC<GlassDialogProps> = ({
                                 )}
                             </View>
                         </View>
-                    </GlassView>
+                    </DialogContainer>
                 </Pressable>
             </View>
         </Modal>

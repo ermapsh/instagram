@@ -1,3 +1,4 @@
+import { AppHeader } from '@/components/app-header';
 import { SearchInput } from '@/components/ui/search-input';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -101,6 +102,15 @@ export default function CountrySelectScreen() {
                 styles.modalContainer,
                 { backgroundColor: theme.color.background }]}
         >
+            <AppHeader
+                title="Select Country"
+                showBack
+                backIcon='close'
+                onPressBack={() => router.back()}
+                style={{
+                    paddingHorizontal: 14
+                }}
+            />
             <FlatList
                 ListHeaderComponent={
                     <SearchInput

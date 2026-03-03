@@ -1,4 +1,3 @@
-import GoBack from '@/components/ui/go-back';
 import { useAppTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import React from 'react';
@@ -31,17 +30,9 @@ export default function Layout() {
             <Stack.Screen
                 name="country-select"
                 options={{
-                    headerShown: true,
+                    headerShown: false,
                     presentation: "modal",
-                    animation: "slide_from_bottom",
-                    headerTitle: "Select a country",
-                    headerStyle: {
-                        backgroundColor: theme.color.background
-                    },
-                    headerTitleStyle: {
-                        color: theme.color.text
-                    },
-                    headerLeft: () => <GoBack icon="close" />
+                    animation: "slide_from_bottom"
                 }}
             />
 

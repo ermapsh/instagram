@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
@@ -13,16 +13,16 @@ function Login() {
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = async () => {
+    const handleLogin = useCallback(async () => {
         setIsLoading(true);
         // Simulate login delay
         // setTimeout(() => {
         setIsLoading(false);
-        // router.dismissAll();
-        router.push('/(auth)/(app)/home');
+        router.dismissAll();
+        router.navigate('/(auth)/(app)/home'); // Navigate to the main app screen after login
         // Navigate or handle success
         // }, 2000);
-    };
+    }, [router]);
 
     return (
         <ScrollView
@@ -73,7 +73,7 @@ function Login() {
                 <Button
                     title="Create new account"
                     variant="outline"
-                    onPress={() => router.push('/(auth)/signup')}
+                    onPress={() => router.navigate('/(auth)/signup')}
                 />
             </View>
         </ScrollView>

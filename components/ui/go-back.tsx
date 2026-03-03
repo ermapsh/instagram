@@ -13,7 +13,7 @@ function GoBack({ icon = os === "ios" ? "chevron-left" : "arrow-left" }: GoBackP
     const theme = useAppTheme();
     return (
         <TouchableOpacity onPress={() => router.back()}>
-            <Icon source={icon} size={35} color={theme.color.text} />
+            <Icon source={icon} size={32} color={theme.color.text} />
         </TouchableOpacity>
     )
 }

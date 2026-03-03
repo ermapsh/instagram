@@ -1,21 +1,14 @@
-import { Redirect } from "expo-router";
-import React from "react";
+import { useRouter } from "expo-router";
+import React, { memo } from "react";
 
-export default function Index() {
-    return <Redirect href="/(auth)/(app)/home" />;
-}
-
-/* 
-Original Join Screen Content (Commented out):
 
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button } from "../components/ui/button";
-import { useAppTheme } from "../hooks/useTheme";
+import { Button } from "@/components/ui/button";
+import { useAppTheme } from "@/hooks/useTheme";
 
-export default function Index() {
+function Index() {
     const theme = useAppTheme();
     const router = useRouter();
 
@@ -28,7 +21,7 @@ export default function Index() {
         >
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <Image
-                    source={require("../assets/images/join-screen/join.png")}
+                    source={require("@/assets/images/join-screen/join.png")}
                     style={{ width: 325, height: 325 }}
                     contentFit="cover"
                 />
@@ -50,6 +43,7 @@ export default function Index() {
         </SafeAreaView>
     );
 }
+export default memo(Index);
 
 const styles = StyleSheet.create({
     container: {
@@ -58,4 +52,3 @@ const styles = StyleSheet.create({
         padding: 16,
     },
 });
-*/

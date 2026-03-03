@@ -1,12 +1,12 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { memo, useCallback, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../../components/ui/button';
-import { GlassDialog } from '../../components/ui/glass-dialog';
 import { Input } from '../../components/ui/input';
 import { useAppTheme } from '../../hooks/useTheme';
 
-export default function SignupScreen() {
+function Signup() {
     const router = useRouter();
     const params = useLocalSearchParams();
     const theme = useAppTheme();
@@ -14,7 +14,7 @@ export default function SignupScreen() {
     const [inputMode, setInputMode] = useState<'phone' | 'email'>('phone');
     const [mobileNumber, setMobileNumber] = useState('');
     const [email, setEmail] = useState('');
-    const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+    // const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
     const selectedCountry = {
         name: (params.selectedCountryName as string) || 'India',
@@ -32,7 +32,7 @@ export default function SignupScreen() {
     }, [isPhone])
 
     return (
-        <ScrollView contentInsetAdjustmentBehavior="automatic" style={[styles.container, { backgroundColor: theme.color.background }]}>
+        <SafeAreaView style={[styles.container, { backgroundColor: theme.color.background }]}>
             <View style={styles.content}>
                 <View>
                     <Text style={[styles.title, { color: theme.color.text }]}>
@@ -101,14 +101,14 @@ export default function SignupScreen() {
             </View>
 
             <View style={styles.footer}>
-                <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
+                <TouchableOpacity onPress={() => router.navigate('/(auth)/login')}>
                     <Text style={[styles.footerText, { color: theme.color.brand }]}>
                         I already have an account
                     </Text>
                 </TouchableOpacity>
             </View>
 
-            <GlassDialog
+            {/* <GlassDialog
                 visible={true}
                 onClose={() => setShowLeaveConfirm(false)}
                 title="Do you want to stop creating your account?"
@@ -125,10 +125,12 @@ export default function SignupScreen() {
                     label: "Continue creating account",
                     onPress: () => setShowLeaveConfirm(false)
                 }}
-            />
-        </ScrollView>
+            /> */}
+        </SafeAreaView>
     );
 }
+
+export default memo(Signup);
 
 const styles = StyleSheet.create({
     container: {

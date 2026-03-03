@@ -3,38 +3,31 @@ import { useAppTheme } from '@/hooks/useTheme';
 import { Stack } from 'expo-router';
 import React from 'react';
 
-export const unstable_settings = {
-    anchor: '(app)/home',
-};
 
 export default function Layout() {
     const theme = useAppTheme();
     return (
         <Stack>
-            <Stack.Screen name="login"
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+
+            <Stack.Screen
+                name="signup"
                 options={{
-                    headerShown: true,
+                    headerShown: false,
                     headerTitle: "",
-                    headerStyle: {
-                        backgroundColor: theme.color.background,
-                    },
-                    headerTransparent: true,
-                    gestureEnabled: true,
-                    headerLeft: () => <GoBack />
+                    presentation: "modal",
                 }}
             />
-            <Stack.Screen name="signup"
+
+            <Stack.Screen
+                name="login"
                 options={{
-                    headerShown: true,
+                    headerShown: false,
                     headerTitle: "",
-                    headerStyle: {
-                        backgroundColor: theme.color.background,
-                    },
-                    headerTransparent: true,
-                    gestureEnabled: true,
-                    headerLeft: () => <GoBack />
+                    presentation: "modal"
                 }}
             />
+
             <Stack.Screen
                 name="country-select"
                 options={{
@@ -48,20 +41,21 @@ export default function Layout() {
                     headerTitleStyle: {
                         color: theme.color.text
                     },
-                    headerTransparent: true,
                     headerLeft: () => <GoBack icon="close" />
                 }}
             />
+
             <Stack.Screen
                 name="(app)"
                 options={{
-                    headerShown: false
+                    headerShown: false,
                 }}
             />
+
             <Stack.Screen
                 name="(screen)"
                 options={{
-                    headerShown: false
+                    headerShown: false,
                 }}
             />
         </Stack>

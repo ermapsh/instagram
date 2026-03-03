@@ -96,9 +96,10 @@ export default function CountrySelectScreen() {
     };
 
     return (
-        <SafeAreaView style={[
-            styles.modalContainer,
-            { backgroundColor: theme.color.background }]}
+        <SafeAreaView
+            style={[
+                styles.modalContainer,
+                { backgroundColor: theme.color.background }]}
         >
             <FlatList
                 ListHeaderComponent={

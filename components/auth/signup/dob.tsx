@@ -14,7 +14,6 @@ interface DobProps {
 function Dob({ onNext, onPressBack }: DobProps) {
     const theme = useAppTheme();
     const [dob, setDob] = useState(new Date());
-    const [showPicker, setShowPicker] = useState<boolean>(false);
 
     const calculateAge = useCallback((birthday: Date) => {
         const ageDifMs = Date.now() - birthday.getTime();
@@ -72,7 +71,6 @@ function Dob({ onNext, onPressBack }: DobProps) {
                     <Button
                         title="Next"
                         onPress={() => {
-                            setShowPicker(false);
                             onNext(dob);
                         }}
                     />
@@ -104,15 +102,15 @@ const styles = StyleSheet.create({
         paddingVertical: 8
     },
     title: {
-        fontSize: 24,
+        fontSize: 25,
         fontWeight: 'bold',
-        marginTop: 10,
-        marginBottom: 12,
+        marginVertical: 10
     },
     subtitle: {
         flexDirection: 'row',
-        fontSize: 14,
-        lineHeight: 20,
+        fontSize: 16,
+        fontWeight: '500',
+        lineHeight: 24,
         marginBottom: 24,
     },
     dobInputContainer: {

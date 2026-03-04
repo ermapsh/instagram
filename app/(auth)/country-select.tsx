@@ -72,7 +72,7 @@ export default function CountrySelectScreen() {
         } catch (error) {
             console.log(error);
         }
-    }, []);
+    }, [router]);
 
     const renderItem = ({ item }: { item: Country }) => {
         const isSelected = item.code === currentCode;

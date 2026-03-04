@@ -36,7 +36,7 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
     }, [isPhone]);
 
     return (
-        <View className="flex-1">
+        <View style={styles.container}>
             <AppHeader
                 showBack={true}
                 onPressBack={onPressBack}
@@ -119,6 +119,11 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 8
+    },
     content: {
         flex: 1,
     },

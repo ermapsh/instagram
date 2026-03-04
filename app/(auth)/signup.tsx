@@ -30,7 +30,7 @@ function Signup() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.color.background }]}>
-            <PagerView scrollEnabled={false} ref={pagerRef} style={globalStyle.flex1} initialPage={0}>
+            <PagerView scrollEnabled={false} ref={pagerRef} style={globalStyle.flex1} initialPage={2}>
 
                 <View key="0" className="flex-1">
                     <Mobile
@@ -58,7 +58,16 @@ function Signup() {
                 </View>
 
                 <View key="2" className="flex-1">
-                    <Dob />
+                    <Dob
+                        onNext={(dob) => {
+                            console.log('DOB submitted', dob);
+                            // Next screen would be fullname
+                            // pagerRef.current?.setPage(3);
+                        }}
+                        onPressBack={() => {
+                            pagerRef.current?.setPage(1);
+                        }}
+                    />
                 </View>
 
             </PagerView>
@@ -90,7 +99,5 @@ export default memo(Signup);
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 16,
-        paddingVertical: 8
     }
 });

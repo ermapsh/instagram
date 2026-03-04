@@ -108,7 +108,7 @@ export function Button({
 
 const styles = StyleSheet.create({
     button: {
-        paddingVertical: 12,
+        paddingVertical: 14,
         paddingHorizontal: 24,
         borderRadius: 100, // Capsule shape as per Instagram
         alignItems: 'center',

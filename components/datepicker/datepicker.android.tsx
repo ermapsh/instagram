@@ -1,19 +1,23 @@
 import { DateTimePicker, Host } from '@expo/ui/jetpack-compose';
-import { useState } from 'react';
+import { memo } from 'react';
 
-export default function DatePickerComponent() {
-    const [selectedDate, setSelectedDate] = useState(new Date());
+interface DatePickerProps {
+    value: Date;
+    onChange: (date: Date) => void;
+    range?: { start: Date; end: Date };
+}
 
+function DatePickerComponent({ value, onChange }: DatePickerProps) {
     return (
         <Host matchContents>
             <DateTimePicker
-                onDateSelected={date => {
-                    setSelectedDate(date);
-                }}
+                onDateSelected={onChange}
                 displayedComponents="date"
-                initialDate={selectedDate.toISOString()}
+                initialDate={value.toISOString()}
                 variant="picker"
             />
         </Host>
     );
 }
+
+export default memo(DatePickerComponent);

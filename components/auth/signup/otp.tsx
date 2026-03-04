@@ -25,7 +25,7 @@ function Otp({ contactFormattedValue, onNext, onPressBack }: OtpProps) {
     }, []);
 
     return (
-        <View className="flex-1">
+        <View style={styles.container}>
             <AppHeader
                 showBack={true}
                 onPressBack={() => {
@@ -82,7 +82,7 @@ function Otp({ contactFormattedValue, onNext, onPressBack }: OtpProps) {
                         onPress={() => {
                             onNext(otp);
                         }}
-                        disabled={otp.length !== OTP_LENGTH}
+                    // disabled={otp.length !== OTP_LENGTH}
                     />
 
                     <Button
@@ -100,6 +100,11 @@ function Otp({ contactFormattedValue, onNext, onPressBack }: OtpProps) {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 8
+    },
     content: {
         flex: 1,
     },

@@ -2,8 +2,10 @@ import { AppHeader } from '@/components/app-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppTheme } from '@/hooks/useTheme';
+import { Ionicons } from '@expo/vector-icons';
 import React, { memo, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Icon } from 'react-native-paper';
 
 interface PasswordProps {
     onNext: (password: string) => void;
@@ -13,6 +15,8 @@ interface PasswordProps {
 function Password({ onNext, onPressBack }: PasswordProps) {
     const theme = useAppTheme();
     const [password, setPassword] = useState('');
+    const [isSecure, setIsSecure] = useState(true);
+    const [remember, setRemember] = useState(true);
 
     return (
         <View style={styles.container}>
@@ -27,7 +31,7 @@ function Password({ onNext, onPressBack }: PasswordProps) {
                     </Text>
 
                     <Text style={[styles.subtitle, { color: theme.color.textSecondary }]}>
-                        Create a password with at least 6 letters or numbers. It should be something others can&apos;t guess.
+                        Create a password with at least six letters or numbers. It should be something that others can&apos;t guess.
                     </Text>
                 </View>
 
@@ -35,11 +39,35 @@ function Password({ onNext, onPressBack }: PasswordProps) {
                     placeholder="Password"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    secureTextEntry={true}
+                    secureTextEntry={isSecure}
                     value={password}
                     onChangeText={setPassword}
                     containerStyle={styles.inputContainer}
+                    rightAccessory={
+                        <TouchableOpacity onPress={() => setIsSecure(!isSecure)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                            <Icon source={isSecure ? require("@/assets/icons/eye-close.png") : require("@/assets/icons/eye-open.png")} size={22} color={theme.color.textSecondary} />
+                        </TouchableOpacity>
+                    }
                 />
+
+                <View style={styles.checkboxContainer}>
+                    <TouchableOpacity
+                        onPress={() => setRemember(!remember)}
+                        style={[
+                            styles.checkbox,
+                            {
+                                borderColor: remember ? theme.color.brand : theme.color.border,
+                                backgroundColor: remember ? theme.color.brand : 'transparent'
+                            }
+                        ]}
+                    >
+                        {remember && <Ionicons name="checkmark" size={14} color="white" />}
+                    </TouchableOpacity>
+                    <Text style={[styles.checkboxText, { color: theme.color.text }]}>
+                        Remember login info.{' '}
+                    </Text>
+                    <Text style={[styles.linkText, { color: theme.color.brand }]}>Learn more</Text>
+                </View>
 
                 <View style={styles.buttonGroup}>
                     <Button
@@ -51,6 +79,12 @@ function Password({ onNext, onPressBack }: PasswordProps) {
                     />
                 </View>
             </View>
+
+            <TouchableOpacity style={styles.bottomContainer} onPress={onPressBack}>
+                <Text style={[styles.bottomText, { color: theme.color.brand }]}>
+                    I already have an account
+                </Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -77,8 +111,37 @@ const styles = StyleSheet.create({
     inputContainer: {
         marginBottom: 16,
     },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 24,
+    },
+    checkbox: {
+        width: 20,
+        height: 20,
+        borderRadius: 4,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10,
+    },
+    checkboxText: {
+        fontSize: 14,
+    },
+    linkText: {
+        fontSize: 14,
+        fontWeight: '500',
+    },
     buttonGroup: {
         gap: 8,
+    },
+    bottomContainer: {
+        alignItems: 'center',
+        paddingVertical: 16,
+    },
+    bottomText: {
+        fontSize: 14,
+        fontWeight: '500',
     },
 });
 

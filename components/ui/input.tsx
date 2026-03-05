@@ -11,12 +11,14 @@ import { useAppTheme } from '../../hooks/useTheme';
 
 interface InputProps extends TextInputProps {
     containerStyle?: StyleProp<ViewStyle>;
+    rightAccessory?: React.ReactNode;
 }
 
 export function Input({
     style,
     containerStyle,
     placeholderTextColor,
+    rightAccessory,
     ...props
 }: InputProps) {
     const theme = useAppTheme();
@@ -30,6 +32,7 @@ export function Input({
                         backgroundColor: theme.color.backgroundSecondary,
                         color: theme.color.text,
                         borderColor: theme.color.border,
+                        paddingRight: rightAccessory ? 48 : 16,
                     },
                     style,
                 ]}
@@ -38,6 +41,11 @@ export function Input({
                 }
                 {...props}
             />
+            {rightAccessory && (
+                <View style={styles.rightAccessoryContainer}>
+                    {rightAccessory}
+                </View>
+            )}
         </View>
     );
 }
@@ -45,6 +53,7 @@ export function Input({
 const styles = StyleSheet.create({
     container: {
         width: '100%',
+        justifyContent: 'center',
     },
     input: {
         width: '100%',
@@ -52,5 +61,11 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         borderWidth: 1,
         fontSize: 16,
+    },
+    rightAccessoryContainer: {
+        position: 'absolute',
+        right: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

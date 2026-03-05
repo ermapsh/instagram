@@ -10,6 +10,7 @@ import Dob from '@/components/auth/signup/dob';
 import Fullname from '@/components/auth/signup/fullname';
 import Mobile from '@/components/auth/signup/mobile';
 import Otp from '@/components/auth/signup/otp';
+import Password from '@/components/auth/signup/password';
 import Username from '@/components/auth/signup/username';
 
 function Signup() {
@@ -60,32 +61,6 @@ function Signup() {
                 </View>
 
                 <View key="2" className="flex-1">
-                    <Dob
-                        onNext={(dob) => {
-                            console.log('DOB submitted', dob);
-                            // Next screen would be fullname
-                            pagerRef.current?.setPage(3);
-                        }}
-                        onPressBack={() => {
-                            pagerRef.current?.setPage(1);
-                        }}
-                    />
-                </View>
-
-                <View key="3" className="flex-1">
-                    <Fullname
-                        onNext={(fullname) => {
-                            console.log('Fullname submitted', fullname);
-                            // Next screen would be username
-                            pagerRef.current?.setPage(4);
-                        }}
-                        onPressBack={() => {
-                            pagerRef.current?.setPage(2);
-                        }}
-                    />
-                </View>
-
-                {/* <View key="4" className="flex-1">
                     <Password
                         onNext={(password) => {
                             console.log('Password submitted', password);
@@ -95,13 +70,28 @@ function Signup() {
                             pagerRef.current?.setPage(3);
                         }}
                     />
-                </View> */}
+                </View>
+
+
+                <View key="3" className="flex-1">
+                    <Dob
+                        onNext={(dob) => {
+                            console.log('DOB submitted', dob);
+                            // Next screen would be fullname
+                            pagerRef.current?.setPage(4);
+                        }}
+                        onPressBack={() => {
+                            pagerRef.current?.setPage(2);
+                        }}
+                    />
+                </View>
 
                 <View key="4" className="flex-1">
-                    <Username
-                        onNext={(username) => {
-                            console.log('Username submitted', username);
-                            // Submit all forms here
+                    <Fullname
+                        onNext={(fullname) => {
+                            console.log('Fullname submitted', fullname);
+                            // Next screen would be username
+                            pagerRef.current?.setPage(5);
                         }}
                         onPressBack={() => {
                             pagerRef.current?.setPage(3);
@@ -109,6 +99,17 @@ function Signup() {
                     />
                 </View>
 
+                <View key="5" className="flex-1">
+                    <Username
+                        onNext={(username) => {
+                            console.log('Username submitted', username);
+                            // Submit all forms here
+                        }}
+                        onPressBack={() => {
+                            pagerRef.current?.setPage(4);
+                        }}
+                    />
+                </View>
             </PagerView>
 
             <GlassDialog

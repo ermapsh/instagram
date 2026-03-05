@@ -7,8 +7,10 @@ import PagerView from 'react-native-pager-view';
 import { useAppTheme } from '../../hooks/useTheme';
 
 import Dob from '@/components/auth/signup/dob';
+import Fullname from '@/components/auth/signup/fullname';
 import Mobile from '@/components/auth/signup/mobile';
 import Otp from '@/components/auth/signup/otp';
+import Username from '@/components/auth/signup/username';
 
 function Signup() {
     const router = useRouter();
@@ -30,7 +32,7 @@ function Signup() {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.color.background }]}>
-            <PagerView scrollEnabled={false} ref={pagerRef} style={globalStyle.flex1} initialPage={2}>
+            <PagerView scrollEnabled={false} ref={pagerRef} style={globalStyle.flex1} initialPage={0}>
 
                 <View key="0" className="flex-1">
                     <Mobile
@@ -62,10 +64,47 @@ function Signup() {
                         onNext={(dob) => {
                             console.log('DOB submitted', dob);
                             // Next screen would be fullname
-                            // pagerRef.current?.setPage(3);
+                            pagerRef.current?.setPage(3);
                         }}
                         onPressBack={() => {
                             pagerRef.current?.setPage(1);
+                        }}
+                    />
+                </View>
+
+                <View key="3" className="flex-1">
+                    <Fullname
+                        onNext={(fullname) => {
+                            console.log('Fullname submitted', fullname);
+                            // Next screen would be username
+                            pagerRef.current?.setPage(4);
+                        }}
+                        onPressBack={() => {
+                            pagerRef.current?.setPage(2);
+                        }}
+                    />
+                </View>
+
+                {/* <View key="4" className="flex-1">
+                    <Password
+                        onNext={(password) => {
+                            console.log('Password submitted', password);
+                            pagerRef.current?.setPage(5);
+                        }}
+                        onPressBack={() => {
+                            pagerRef.current?.setPage(3);
+                        }}
+                    />
+                </View> */}
+
+                <View key="4" className="flex-1">
+                    <Username
+                        onNext={(username) => {
+                            console.log('Username submitted', username);
+                            // Submit all forms here
+                        }}
+                        onPressBack={() => {
+                            pagerRef.current?.setPage(3);
                         }}
                     />
                 </View>

@@ -5,14 +5,14 @@ import { useAppTheme } from '@/hooks/useTheme';
 import React, { memo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-interface UsernameProps {
-    onNext: (username: string) => void;
+interface PasswordProps {
+    onNext: (password: string) => void;
     onPressBack: () => void;
 }
 
-function Username({ onNext, onPressBack }: UsernameProps) {
+function Password({ onNext, onPressBack }: PasswordProps) {
     const theme = useAppTheme();
-    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
     return (
         <View style={styles.container}>
@@ -23,20 +23,21 @@ function Username({ onNext, onPressBack }: UsernameProps) {
             <View style={styles.content}>
                 <View>
                     <Text style={[styles.title, { color: theme.color.text }]}>
-                        Create a username
+                        Create a password
                     </Text>
 
                     <Text style={[styles.subtitle, { color: theme.color.textSecondary }]}>
-                        Add a username or use our suggestion. You can change this at any time.
+                        Create a password with at least 6 letters or numbers. It should be something others can&apos;t guess.
                     </Text>
                 </View>
 
                 <Input
-                    placeholder="Username"
+                    placeholder="Password"
                     autoCapitalize="none"
                     autoCorrect={false}
-                    value={username}
-                    onChangeText={setUsername}
+                    secureTextEntry={true}
+                    value={password}
+                    onChangeText={setPassword}
                     containerStyle={styles.inputContainer}
                 />
 
@@ -44,9 +45,9 @@ function Username({ onNext, onPressBack }: UsernameProps) {
                     <Button
                         title="Next"
                         onPress={() => {
-                            onNext(username);
+                            onNext(password);
                         }}
-                        disabled={username.trim().length === 0}
+                        disabled={password.length < 6}
                     />
                 </View>
             </View>
@@ -81,4 +82,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default memo(Username);
+export default memo(Password);

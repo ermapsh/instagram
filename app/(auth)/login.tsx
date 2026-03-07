@@ -77,7 +77,7 @@ function Login() {
                 <Button
                     title="Create new account"
                     variant="outline"
-                    onPress={() => router.navigate('/(auth)/signup')}
+                    onPress={() => router.replace('/(auth)/signup')}
                 />
             </View>
         </ScrollView>

@@ -108,7 +108,7 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
             </View>
 
             <View style={styles.footer}>
-                <TouchableOpacity onPress={() => router.navigate('/(auth)/login')}>
+                <TouchableOpacity onPress={() => router.replace('/(auth)/login')}>
                     <Text style={[styles.footerText, { color: theme.color.brand }]}>
                         I already have an account
                     </Text>

@@ -25,7 +25,7 @@ export function SearchInput({
     return (
         <View style={[
             styles.container,
-            { backgroundColor: theme.color.backgroundSecondary },
+            { backgroundColor: theme.color.backgroundInteractive },
             containerStyle
         ]}>
             <Ionicons

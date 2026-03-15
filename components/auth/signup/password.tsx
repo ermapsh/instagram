@@ -79,12 +79,6 @@ function Password({ onNext, onPressBack }: PasswordProps) {
                     />
                 </View>
             </View>
-
-            <TouchableOpacity style={styles.bottomContainer} onPress={onPressBack}>
-                <Text style={[styles.bottomText, { color: theme.color.brand }]}>
-                    I already have an account
-                </Text>
-            </TouchableOpacity>
         </View>
     );
 }

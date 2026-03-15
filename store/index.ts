@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import mobileReducer from './features/signup/mobileSlice'
+import otpReducer from './features/signup/otpSlice'
 
 export const store = configureStore({
     reducer: {
-        mobile: mobileReducer
+        mobile: mobileReducer,
+        otp: otpReducer
     },
 })
 

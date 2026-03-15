@@ -1,28 +1,51 @@
 import { AppHeader } from '@/components/app-header';
 import { Button } from '@/components/ui/button';
 import { useAppTheme } from '@/hooks/useTheme';
-import React, { memo, useEffect, useRef, useState } from 'react';
+import { RootState } from '@/store';
+import { otpVerifyApi } from '@/store/features/signup/otpSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 interface OtpProps {
-    contactFormattedValue: string;
     onNext: (otp: string) => void;
     onPressBack: () => void;
 }
 
-function Otp({ contactFormattedValue, onNext, onPressBack }: OtpProps) {
-    const theme = useAppTheme();
-    const otpInputRef = useRef<TextInput>(null);
-    const [otp, setOtp] = useState('');
+function Otp({ onNext, onPressBack }: OtpProps) {
     const OTP_LENGTH = 6;
+    const theme = useAppTheme();
+    const dispatch = useAppDispatch();
+    const { isLoading, isSuccess, isError, message, data } = useAppSelector((state: RootState) => state.otp)
+    const { data: mobileData } = useAppSelector((state: RootState) => state.mobile)
+    const [otp, setOtp] = useState('');
+    const otpInputRef = useRef<TextInput>(null);
 
-    // Focus the input when component mounts
+
     useEffect(() => {
         const timer = setTimeout(() => {
             otpInputRef.current?.focus();
         }, 300);
         return () => clearTimeout(timer);
     }, []);
+
+    const verifyOtp = useCallback(() => {
+        try {
+            const payload = {
+                "sessionId": mobileData?.sessionId,
+                "otp": otp
+            }
+            dispatch(otpVerifyApi(payload))
+        } catch (error) {
+            console.log(error)
+        }
+    }, [mobileData, otp, dispatch]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            onNext(data)
+        }
+    }, [isSuccess, data, onNext])
 
     return (
         <View style={styles.container}>
@@ -40,7 +63,7 @@ function Otp({ contactFormattedValue, onNext, onPressBack }: OtpProps) {
                     </Text>
 
                     <Text style={[styles.subtitle, { color: theme.color.text }]}>
-                        To confirm your account, enter the {OTP_LENGTH}-digit code that we sent {contactFormattedValue}
+                        To confirm your account, enter the {OTP_LENGTH}-digit code that we sent {mobileData?.mobile}
                     </Text>
                 </View>
 
@@ -79,10 +102,8 @@ function Otp({ contactFormattedValue, onNext, onPressBack }: OtpProps) {
                 <View style={styles.buttonGroup}>
                     <Button
                         title="Next"
-                        onPress={() => {
-                            onNext(otp);
-                        }}
-                    // disabled={otp.length !== OTP_LENGTH}
+                        onPress={verifyOtp}
+                        disabled={otp.length !== OTP_LENGTH}
                     />
 
                     <Button

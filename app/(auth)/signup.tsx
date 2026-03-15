@@ -20,9 +20,6 @@ function Signup() {
 
     const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
-    // Auth State
-    const [contactFormattedValue, setContactFormattedValue] = useState('');
-
     const onPressBack = useCallback(() => {
         try {
             setShowLeaveConfirm(true)
@@ -37,8 +34,7 @@ function Signup() {
 
                 <View key="0" className="flex-1">
                     <Mobile
-                        onNext={(data) => {
-                            setContactFormattedValue(data.formattedValue);
+                        onNext={() => {
                             Keyboard.dismiss();
                             pagerRef.current?.setPage(1);
                         }}
@@ -48,7 +44,6 @@ function Signup() {
 
                 <View key="1" className="flex-1">
                     <Otp
-                        contactFormattedValue={contactFormattedValue}
                         onNext={(otp) => {
                             console.log('OTP submitted', otp);
                             Keyboard.dismiss();
@@ -64,10 +59,10 @@ function Signup() {
                     <Password
                         onNext={(password) => {
                             console.log('Password submitted', password);
-                            pagerRef.current?.setPage(5);
+                            pagerRef.current?.setPage(3);
                         }}
                         onPressBack={() => {
-                            pagerRef.current?.setPage(3);
+                            pagerRef.current?.setPage(1);
                         }}
                     />
                 </View>

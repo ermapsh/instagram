@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppTheme } from '@/hooks/useTheme';
 import { RootState } from '@/store';
-import { mobileApi } from '@/store/features/signup/mobileSlice';
+import { mobileApi, setMobile, setMobileError } from '@/store/features/signup/mobileSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { memo, useCallback, useEffect, useState } from 'react';
@@ -11,7 +11,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { HelperText } from 'react-native-paper';
 
 interface MobileProps {
-    onNext: (data: { type: 'phone' | 'email', value: string, formattedValue: string }) => void;
+    onNext: () => void;
     onPressBack: () => void;
 }
 
@@ -20,11 +20,9 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
     const params = useLocalSearchParams();
     const theme = useAppTheme();
     const dispatch = useAppDispatch();
-    const { isLoading, isSuccess, isError, message, data } = useAppSelector((state: RootState) => state.mobile);
+    const { isLoading, isSuccess, isError, message, data, mobile, mobileError } = useAppSelector((state: RootState) => state.mobile);
 
     const [inputMode, setInputMode] = useState<'phone' | 'email'>('phone');
-    const [mobileNumber, setMobileNumber] = useState('');
-    const [mobileError, setMobileError] = useState(false);
     const [email, setEmail] = useState('');
     // const [emailError, setEmailError] = useState('');
 
@@ -38,33 +36,29 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
     const onChange = useCallback((text: string) => {
         if (isPhone) {
             if (text.length >= 10) {
-                setMobileError(false)
+                dispatch(setMobileError(false))
             } else {
-                setMobileError(true)
+                dispatch(setMobileError(true))
             }
-            setMobileNumber(text)
+            dispatch(setMobile(text))
         } else {
-            setEmail(text)
+            // dispatch(setEmail(text))
         }
-    }, [isPhone]);
+    }, [isPhone, dispatch]);
 
     const handleNext = useCallback(() => {
         if (isPhone) {
-            dispatch(mobileApi(mobileNumber));
+            dispatch(mobileApi(mobile));
         } else {
             // dispatch(emailApi(email));
         }
-    }, [dispatch, mobileNumber, isPhone]);
+    }, [dispatch, mobile, isPhone]);
 
     useEffect(() => {
         if (isSuccess) {
-            onNext({
-                type: isPhone ? 'phone' : 'email',
-                value: isPhone ? `${selectedCountry.code}${mobileNumber}` : email,
-                formattedValue: isPhone ? `via WhatsApp to ${selectedCountry.code}${mobileNumber}.` : `to ${email}.`
-            });
+            onNext?.();
         }
-    }, [isSuccess])
+    }, [isSuccess, onNext])
 
     return (
         <View style={styles.container}>
@@ -103,7 +97,7 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
                     placeholder={isPhone ? "Mobile number" : "Email address"}
                     keyboardType={isPhone ? "phone-pad" : "email-address"}
                     autoCapitalize="none"
-                    value={isPhone ? mobileNumber : email}
+                    value={isPhone ? mobile : email}
                     onChangeText={onChange}
                     containerStyle={styles.inputContainer}
                     maxLength={isPhone ? 10 : 255}
@@ -126,7 +120,7 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
                         loading={isLoading}
                         title="Next"
                         onPress={handleNext}
-                        disabled={isPhone ? mobileNumber.length < 5 : email.length < 5}
+                        disabled={isPhone ? mobile.length < 5 : email.length < 5}
                     />
 
                     <Button

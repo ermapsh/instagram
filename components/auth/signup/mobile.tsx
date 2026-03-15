@@ -2,9 +2,13 @@ import { AppHeader } from '@/components/app-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppTheme } from '@/hooks/useTheme';
+import { RootState } from '@/store';
+import { mobileApi } from '@/store/features/signup/mobileSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { memo, useCallback, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { HelperText } from 'react-native-paper';
 
 interface MobileProps {
     onNext: (data: { type: 'phone' | 'email', value: string, formattedValue: string }) => void;
@@ -15,10 +19,14 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
     const router = useRouter();
     const params = useLocalSearchParams();
     const theme = useAppTheme();
+    const dispatch = useAppDispatch();
+    const { isLoading, isSuccess, isError, message, data } = useAppSelector((state: RootState) => state.mobile);
 
     const [inputMode, setInputMode] = useState<'phone' | 'email'>('phone');
     const [mobileNumber, setMobileNumber] = useState('');
+    const [mobileError, setMobileError] = useState(false);
     const [email, setEmail] = useState('');
+    // const [emailError, setEmailError] = useState('');
 
     const selectedCountry = {
         name: (params.selectedCountryName as string) || 'India',
@@ -29,11 +37,34 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
 
     const onChange = useCallback((text: string) => {
         if (isPhone) {
+            if (text.length >= 10) {
+                setMobileError(false)
+            } else {
+                setMobileError(true)
+            }
             setMobileNumber(text)
         } else {
             setEmail(text)
         }
     }, [isPhone]);
+
+    const handleNext = useCallback(() => {
+        if (isPhone) {
+            dispatch(mobileApi(mobileNumber));
+        } else {
+            // dispatch(emailApi(email));
+        }
+    }, [dispatch, mobileNumber, isPhone]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            onNext({
+                type: isPhone ? 'phone' : 'email',
+                value: isPhone ? `${selectedCountry.code}${mobileNumber}` : email,
+                formattedValue: isPhone ? `via WhatsApp to ${selectedCountry.code}${mobileNumber}.` : `to ${email}.`
+            });
+        }
+    }, [isSuccess])
 
     return (
         <View style={styles.container}>
@@ -75,7 +106,14 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
                     value={isPhone ? mobileNumber : email}
                     onChangeText={onChange}
                     containerStyle={styles.inputContainer}
+                    maxLength={isPhone ? 10 : 255}
                 />
+
+                {isPhone && mobileError && (
+                    <HelperText style={{ color: 'red' }} type="error" visible={true}>
+                        Please enter a valid mobile number.
+                    </HelperText>
+                )}
 
                 {isPhone && (
                     <Text style={[styles.notificationsText, { color: theme.color.textSecondary }]}>
@@ -85,24 +123,18 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
 
                 <View style={styles.buttonGroup}>
                     <Button
+                        loading={isLoading}
                         title="Next"
-                        onPress={() => {
-                            const result = {
-                                type: isPhone ? 'phone' : 'email',
-                                value: isPhone ? `${selectedCountry.code}${mobileNumber}` : email,
-                                formattedValue: isPhone ? `via WhatsApp to ${selectedCountry.code}${mobileNumber}.` : `to ${email}.`
-                            };
-                            onNext(result as any);
-                        }}
+                        onPress={handleNext}
                         disabled={isPhone ? mobileNumber.length < 5 : email.length < 5}
                     />
 
                     <Button
                         title={isPhone ? "Sign up with email address" : "Sign up with mobile number"}
                         variant="outline"
-                        onPress={() => {
-                            setInputMode(isPhone ? 'email' : 'phone');
-                        }}
+                    // onPress={() => {
+                    //     setInputMode(isPhone ? 'email' : 'phone');
+                    // }}
                     />
                 </View>
             </View>
@@ -150,12 +182,11 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     inputContainer: {
-        marginBottom: 16,
     },
     notificationsText: {
         fontSize: 12,
         lineHeight: 16,
-        marginBottom: 24,
+        marginVertical: 12,
         paddingHorizontal: 4,
     },
     buttonGroup: {

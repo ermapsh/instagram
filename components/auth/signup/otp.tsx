@@ -6,6 +6,7 @@ import { otpVerifyApi } from '@/store/features/signup/otpSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { HelperText } from 'react-native-paper';
 
 interface OtpProps {
     onNext: (otp: string) => void;
@@ -44,8 +45,10 @@ function Otp({ onNext, onPressBack }: OtpProps) {
     useEffect(() => {
         if (isSuccess) {
             onNext(data)
+        } else if (isError) {
+            // Alert.alert(message || "Something went wrong")
         }
-    }, [isSuccess, data, onNext])
+    }, [isSuccess, data, onNext, isError, message])
 
     return (
         <View style={styles.container}>
@@ -99,11 +102,16 @@ function Otp({ onNext, onPressBack }: OtpProps) {
                     />
                 </View>
 
+                <HelperText type="error" visible={isError} style={styles.errorText}>
+                    {message}
+                </HelperText>
+
                 <View style={styles.buttonGroup}>
                     <Button
                         title="Next"
                         onPress={verifyOtp}
-                        disabled={otp.length !== OTP_LENGTH}
+                        disabled={otp.length !== OTP_LENGTH || isLoading}
+                        loading={isLoading}
                     />
 
                     <Button
@@ -144,7 +152,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     otpWrapper: {
-        marginBottom: 24,
+        // marginBottom: 24,
         position: 'relative',
     },
     otpContainer: {
@@ -168,6 +176,12 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         opacity: 0,
     },
+    errorText: {
+        color: 'red',
+        fontWeight: 500,
+        fontSize: 12,
+        marginTop: 4
+    }
 });
 
 export default memo(Otp);

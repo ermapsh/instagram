@@ -2,8 +2,11 @@ import { AppHeader } from '@/components/app-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppTheme } from '@/hooks/useTheme';
+import { RootState } from '@/store';
+import { setPassword, setPasswordError } from '@/store/features/signup/signupSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Ionicons } from '@expo/vector-icons';
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
@@ -14,9 +17,19 @@ interface PasswordProps {
 
 function Password({ onNext, onPressBack }: PasswordProps) {
     const theme = useAppTheme();
-    const [password, setPassword] = useState('');
+    const dispatch = useAppDispatch();
+    const { password, passwordError, isLoading } = useAppSelector((state: RootState) => state.signup);
     const [isSecure, setIsSecure] = useState(true);
     const [remember, setRemember] = useState(true);
+
+    const onChange = useCallback((text: string) => {
+        if (text.length >= 6) {
+            dispatch(setPasswordError(false));
+        } else {
+            dispatch(setPasswordError(true));
+        }
+        dispatch(setPassword(text));
+    }, [dispatch]);
 
     return (
         <View style={styles.container}>
@@ -41,8 +54,9 @@ function Password({ onNext, onPressBack }: PasswordProps) {
                     autoCorrect={false}
                     secureTextEntry={isSecure}
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={onChange}
                     containerStyle={styles.inputContainer}
+                    error={passwordError ? "Password must be at least 6 characters" : undefined}
                     rightAccessory={
                         <TouchableOpacity onPress={() => setIsSecure(!isSecure)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
                             <Icon source={isSecure ? require("@/assets/icons/eye-close.png") : require("@/assets/icons/eye-open.png")} size={22} color={theme.color.textSecondary} />
@@ -75,7 +89,8 @@ function Password({ onNext, onPressBack }: PasswordProps) {
                         onPress={() => {
                             onNext(password);
                         }}
-                        disabled={password.length < 6}
+                        disabled={password.length < 6 || passwordError}
+                        loading={isLoading}
                     />
                 </View>
             </View>

@@ -2,8 +2,12 @@ import { AppHeader } from '@/components/app-header';
 import DatePickerComponent from '@/components/datepicker/datepicker';
 import { Button } from '@/components/ui/button';
 import { useAppTheme } from '@/hooks/useTheme';
-import React, { memo, useCallback, useState } from 'react';
+import { RootState } from '@/store';
+import { setDob, setDobError } from '@/store/features/signup/signupSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { HelperText } from 'react-native-paper';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 
 interface DobProps {
@@ -13,7 +17,9 @@ interface DobProps {
 
 function Dob({ onNext, onPressBack }: DobProps) {
     const theme = useAppTheme();
-    const [dob, setDob] = useState(new Date());
+    const dispatch = useAppDispatch();
+    const { dob: dobStringParam, dobError, isLoading } = useAppSelector((state: RootState) => state.signup);
+    const dob = dobStringParam ? new Date(dobStringParam) : new Date();
 
     const calculateAge = useCallback((birthday: Date) => {
         const ageDifMs = Date.now() - birthday.getTime();
@@ -66,13 +72,26 @@ function Dob({ onNext, onPressBack }: DobProps) {
                         {dobString}
                     </Text>
                 </TouchableOpacity>
+                {
+                    dobError && (
+                        <HelperText type="error" visible={dobError} style={styles.errorText}>
+                            You must be at least 13 years old to use Instagram.
+                        </HelperText>
+                    )
+                }
 
-                <View style={styles.buttonGroup}>
+                <View style={[styles.buttonGroup, {}]}>
                     <Button
                         title="Next"
                         onPress={() => {
+                            if (calculateAge(dob) < 13) {
+                                dispatch(setDobError(true));
+                                return;
+                            }
                             onNext(dob);
                         }}
+                        disabled={dobError}
+                        loading={isLoading}
                     />
                 </View>
             </View>
@@ -83,7 +102,13 @@ function Dob({ onNext, onPressBack }: DobProps) {
                 <DatePickerComponent
                     value={dob}
                     onChange={(date: Date) => {
-                        setDob(date);
+                        const age = calculateAge(date);
+                        if (age < 13) {
+                            dispatch(setDobError(true));
+                        } else {
+                            dispatch(setDobError(false));
+                        }
+                        dispatch(setDob(date.toISOString()));
                     }}
                     range={{
                         start: new Date(1900, 0, 1),
@@ -118,7 +143,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 16,
         paddingVertical: 12,
-        marginBottom: 24,
+        marginBottom: 12
     },
     dobLabel: {
         fontSize: 12,
@@ -136,6 +161,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 25
+    },
+    errorText: {
+        color: 'red',
+        fontWeight: 500,
+        fontSize: 12,
+        // marginTop: 4
     }
 });
 

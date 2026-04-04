@@ -7,11 +7,13 @@ import {
     View,
     ViewStyle
 } from 'react-native';
+import { HelperText } from 'react-native-paper';
 import { useAppTheme } from '../../hooks/useTheme';
 
 interface InputProps extends TextInputProps {
     containerStyle?: StyleProp<ViewStyle>;
     rightAccessory?: React.ReactNode;
+    error?: string;
 }
 
 export function Input({
@@ -19,6 +21,7 @@ export function Input({
     containerStyle,
     placeholderTextColor,
     rightAccessory,
+    error,
     ...props
 }: InputProps) {
     const theme = useAppTheme();
@@ -46,6 +49,11 @@ export function Input({
                     {rightAccessory}
                 </View>
             )}
+            {error ? (
+                <HelperText type="error" style={styles.errorText} visible={true}>
+                    {error}
+                </HelperText>
+            ) : null}
         </View>
     );
 }
@@ -68,4 +76,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    errorText: {
+        color: 'red',
+        fontWeight: 500,
+        fontSize: 12,
+        marginTop: 4
+    }
 });

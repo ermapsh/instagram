@@ -2,7 +2,10 @@ import { AppHeader } from '@/components/app-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppTheme } from '@/hooks/useTheme';
-import React, { memo, useState } from 'react';
+import { RootState } from '@/store';
+import { setFullName, setFullNameError } from '@/store/features/signup/signupSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import React, { memo, useCallback } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 interface FullnameProps {
@@ -12,7 +15,17 @@ interface FullnameProps {
 
 function Fullname({ onNext, onPressBack }: FullnameProps) {
     const theme = useAppTheme();
-    const [fullname, setFullname] = useState('');
+    const dispatch = useAppDispatch();
+    const { fullName, fullNameError, isLoading } = useAppSelector((state: RootState) => state.signup);
+
+    const onChange = useCallback((text: string) => {
+        if (text.trim().length === 0) {
+            dispatch(setFullNameError(true));
+        } else {
+            dispatch(setFullNameError(false));
+        }
+        dispatch(setFullName(text));
+    }, [dispatch]);
 
     return (
         <View style={styles.container}>
@@ -34,18 +47,24 @@ function Fullname({ onNext, onPressBack }: FullnameProps) {
                 <Input
                     placeholder="Full name"
                     autoCapitalize="words"
-                    value={fullname}
-                    onChangeText={setFullname}
+                    value={fullName}
+                    onChangeText={onChange}
                     containerStyle={styles.inputContainer}
+                    error={fullNameError ? "Please enter your full name" : undefined}
                 />
 
                 <View style={styles.buttonGroup}>
                     <Button
                         title="Next"
                         onPress={() => {
-                            onNext(fullname);
+                            if (fullName.trim().length === 0) {
+                                dispatch(setFullNameError(true));
+                                return;
+                            }
+                            onNext(fullName);
                         }}
-                        disabled={fullname.trim().length === 0}
+                        disabled={fullName.trim().length === 0 || fullNameError}
+                        loading={isLoading}
                     />
                 </View>
             </View>

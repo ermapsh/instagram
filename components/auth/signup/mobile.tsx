@@ -8,7 +8,6 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { HelperText } from 'react-native-paper';
 
 interface MobileProps {
     onNext: () => void;
@@ -101,13 +100,14 @@ function Mobile({ onNext, onPressBack }: MobileProps) {
                     onChangeText={onChange}
                     containerStyle={styles.inputContainer}
                     maxLength={isPhone ? 10 : 255}
+                    error={mobileError ? "Please enter a valid mobile number." : undefined}
                 />
 
-                {isPhone && mobileError && (
+                {/* {isPhone && mobileError && (
                     <HelperText style={{ color: 'red' }} type="error" visible={true}>
                         Please enter a valid mobile number.
                     </HelperText>
-                )}
+                )} */}
 
                 {isPhone && (
                     <Text style={[styles.notificationsText, { color: theme.color.textSecondary }]}>

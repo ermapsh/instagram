@@ -134,7 +134,7 @@ export const ReelItem = ({
             try {
                 if (player && !isVisible && player?.pause) player?.pause();
             } catch (err) {
-                // console.error(err);
+                console.error(err);
                 // Ignore if native shared object is already destroyed
             }
         };

@@ -97,7 +97,7 @@ function ReelTab() {
 }
 
 function RepostTab() {
-    const theme = useAppTheme();
+    // const theme = useAppTheme();
     return <EmptyComponent />;
 }
 

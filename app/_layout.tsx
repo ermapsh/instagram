@@ -12,6 +12,7 @@ import RNPaperProvider from '../provider/RNPaperProvider';
 
 export default function RootLayout() {
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);

@@ -46,7 +46,7 @@ export function AppHeader({ backIcon = os === 'android' ? 'arrow-left' : 'chevro
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: 12,
+        padding: 12,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',

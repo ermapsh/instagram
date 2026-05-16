@@ -2,8 +2,9 @@ import { useAppTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Image } from 'expo-image';
-import React, { useCallback, useMemo } from 'react';
-import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { router } from 'expo-router';
+import React, { memo, useCallback, useMemo } from 'react';
+import { Dimensions, FlatList, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
@@ -117,7 +118,7 @@ function TagTab() {
     )
 }
 
-export default function ProfileScreen() {
+function ProfileScreen() {
     const theme = useAppTheme();
     const insets = useSafeAreaInsets();
 
@@ -166,7 +167,11 @@ export default function ProfileScreen() {
                             <Text style={styles.badgeText}>9+</Text>
                         </View>
                     </TouchableOpacity>
-                    <Ionicons name="menu-outline" size={32} color={theme.color.text} />
+                    <Pressable onPress={() => {
+                        router.navigate("/(auth)/(settings)")
+                    }}>
+                        <Ionicons name="menu-outline" size={32} color={theme.color.text} />
+                    </Pressable>
                 </View>
             </View>
 
@@ -309,6 +314,8 @@ export default function ProfileScreen() {
         </View>
     );
 }
+
+export default memo(ProfileScreen);
 
 const styles = StyleSheet.create({
     container: {

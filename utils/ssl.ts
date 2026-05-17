@@ -33,7 +33,7 @@ export const initializeSSL = async () => {
             'localhost': {
                 includeSubdomains: true,
                 publicKeyHashes: [
-                    api_token || ""
+                    api_token
                 ],
             },
 

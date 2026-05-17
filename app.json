@@ -61,7 +61,15 @@
       ],
       "expo-font",
       "expo-image",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "networkInspector": false
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

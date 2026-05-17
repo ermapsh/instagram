@@ -3,6 +3,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import StoreProvider from '@/provider/StoreProvider';
+import { initializeSSL } from '@/utils/ssl';
 import { Slot } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
@@ -14,6 +15,7 @@ export default function RootLayout() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    initializeSSL();
     setTimeout(() => {
       setLoading(false);
     }, 2000)
